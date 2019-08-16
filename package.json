@@ -19,5 +19,8 @@
   "homepage": "https://github.com/adrian-sureshkumar/d3-donut-3d#readme",
   "devDependencies": {
     "typescript": "^3.5.3"
+  },
+  "dependencies": {
+    "x3dom": "^1.8.0"
   }
 }
