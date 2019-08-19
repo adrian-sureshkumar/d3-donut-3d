@@ -29,6 +29,8 @@
     "typescript": "^3.5.3"
   },
   "dependencies": {
+    "@types/d3": "^5.7.2",
+    "d3": "^5.9.7",
     "x3dom": "^1.8.0"
   }
 }
