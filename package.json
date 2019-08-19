@@ -20,10 +20,12 @@
   },
   "homepage": "https://github.com/adrian-sureshkumar/d3-donut-3d#readme",
   "devDependencies": {
+    "@types/faker": "^4.1.5",
     "@types/jest": "^24.0.17",
     "@typescript-eslint/eslint-plugin": "^2.0.0",
     "@typescript-eslint/parser": "^2.0.0",
     "eslint": "^6.1.0",
+    "faker": "^4.1.0",
     "jest": "^24.9.0",
     "ts-jest": "^24.0.2",
     "typescript": "^3.5.3"
