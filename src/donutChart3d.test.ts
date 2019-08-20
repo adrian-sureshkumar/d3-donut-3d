@@ -1,7 +1,7 @@
 import { select, BaseType } from "d3";
 import faker from "faker";
 
-import donutChart3d, { RenderDonutChart3D, Donut3DDatum } from "./donutChart3d";
+import { donutChart3d, RenderDonutChart3D, Donut3DDatum } from "./donutChart3d";
 
 const data: Donut3DDatum[] = [{
     value: faker.random.number()

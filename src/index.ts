@@ -1,1 +1,1 @@
-export { default as donutChart3d } from "./donutChart3d";
+export * from "./donutChart3d";
