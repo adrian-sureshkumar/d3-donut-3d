@@ -22,8 +22,8 @@ export interface RenderDonutChart3D<
     PDatum
     > extends Render<GElement, Datum, PElement, PDatum> {
     data: FluentD3GetSet<this, Donut3DDatum[]>;
-    height: FluentD3GetSet<this, string>;
-    width: FluentD3GetSet<this, string>;
+    height: FluentD3GetSet<this, string | null>;
+    width: FluentD3GetSet<this, string | null>;
 }
 
 export function donutChart3d<
@@ -33,8 +33,8 @@ export function donutChart3d<
     PDatum
 >(): RenderDonutChart3D<GElement, Datum, PElement, PDatum> {
     let data: Donut3DDatum[] = [];
-    let height = "600px";
-    let width = "800px";
+    let height: string | null = null;
+    let width: string | null = null;
 
     const render: RenderDonutChart3D<GElement, Datum, PElement, PDatum> = function (selection) {
         const x3dDataJoin = selection.selectAll("x3d")
@@ -42,8 +42,8 @@ export function donutChart3d<
 
         x3dDataJoin.enter().append("x3d")
             .merge(x3dDataJoin)
-              .attr("height", height)
-              .attr("width", width);
+              .attr("height", () => height)
+              .attr("width", () => width);
 
         x3dDataJoin.remove();
     };

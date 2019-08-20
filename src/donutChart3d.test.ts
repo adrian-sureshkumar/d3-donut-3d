@@ -24,8 +24,8 @@ describe("property getters/setters", () => {
     describe.each`
         property    | defaultValue | value
         ${"data"}   | ${[]}        | ${data}
-        ${"height"} | ${"600px"}   | ${height}
-        ${"width"}  | ${"800px"}   | ${width}
+        ${"height"} | ${null}      | ${height}
+        ${"width"}  | ${null}      | ${width}
     `("$property", ({ property, defaultValue, value }: {
         property: keyof typeof chart;
         defaultValue: any;
