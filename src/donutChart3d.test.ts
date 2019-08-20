@@ -58,9 +58,10 @@ describe("property getters/setters", () => {
 describe("when the chart is rendered", () => {
     let root: HTMLDivElement;
     let x3dElement: Element | null;
+    let sceneElement: Element | null;
     let chart: RenderDonutChart3D<HTMLDivElement, null, null, undefined>;
 
-    beforeEach(() => {
+    beforeAll(() => {
         root = document.createElement("div")
         document.body.append(root);
 
@@ -72,9 +73,10 @@ describe("when the chart is rendered", () => {
         chart(select(root));
 
         x3dElement = root.querySelector("x3d");
+        sceneElement = root.querySelector("x3d > scene");
     });
 
-    afterEach(() => {
+    afterAll(() => {
         root.remove();
     });
 
@@ -90,5 +92,9 @@ describe("when the chart is rendered", () => {
     it("should set the width of the x3d element", () => {
         const widthAttr = x3dElement && x3dElement.attributes.getNamedItem("width");
         expect(widthAttr && widthAttr.value).toBe(width);
+    })
+
+    it("should create a scene element", () => {
+        expect(sceneElement).not.toBeNull();
     })
 });

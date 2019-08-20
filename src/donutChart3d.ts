@@ -37,15 +37,15 @@ export function donutChart3d<
     let width: string | null = null;
 
     const render: RenderDonutChart3D<GElement, Datum, PElement, PDatum> = function (selection) {
-        const x3dDataJoin = selection.selectAll("x3d")
-            .data([data]);
-
-        x3dDataJoin.enter().append("x3d")
-            .merge(x3dDataJoin)
+        const x3d = selection.selectAll("x3d")
+            .data([data])
+            .join("x3d")
               .attr("height", () => height)
               .attr("width", () => width);
 
-        x3dDataJoin.remove();
+        const scene = x3d.selectAll("scene")
+            .data(d => [d])
+            .join("scene");
     };
 
     render.height = makeFluentD3GetSet(render, () => height, value => height = value);
