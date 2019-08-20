@@ -129,8 +129,9 @@ describe("when the chart is rendered", () => {
         it("should have a torus element with the angle set to the donut segment size", () => {
             expect(torusElement).not.toBeNull();
 
+            const angle = (data[i].value / 360) * 2 * Math.PI;
             const angleAttribute = torusElement && torusElement.attributes.getNamedItem("angle");
-            expect(angleAttribute && Number(angleAttribute.value)).toBeCloseTo((data[i].value / 360) * 2 * Math.PI, 9);
+            expect(angleAttribute && Number(angleAttribute.value)).toBeCloseTo(angle, 9);
         });
     });
 });
