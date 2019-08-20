@@ -49,6 +49,10 @@
       "plugin:@typescript-eslint/recommended"
     ]
   },
+  "eslintIgnore": [
+    "lib/**/*",
+    "examples/**/*.bundle.js"
+  ],
   "jest": {
     "preset": "ts-jest"
   }
