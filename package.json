@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc",
+    "bundle:examples": "browserify examples/donut-3d-example.js -o examples/donut-3d-example.bundle.js",
     "test": "jest",
     "test:watch": "npm run test -- --watch",
     "type-check": "tsc --noEmit",
@@ -24,6 +25,7 @@
     "@types/jest": "^24.0.17",
     "@typescript-eslint/eslint-plugin": "^2.0.0",
     "@typescript-eslint/parser": "^2.0.0",
+    "browserify": "^16.5.0",
     "eslint": "^6.1.0",
     "faker": "^4.1.0",
     "jest": "^24.9.0",
