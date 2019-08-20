@@ -118,8 +118,16 @@ describe("when the chart is rendered", () => {
             torusElement = groupElement.querySelector("transform > shape > torus");
         });
 
-        it("should have a root transform element", () => {
+        it("should have a root transform element rotated about the z-axis to the start of the donut segment", () => {
             expect(rootTransformElement).not.toBeNull();
+
+            const angle = (data.slice(0, i).map(datum => datum.value).reduce((sum, value) => sum + value, 0) / 360) * 2 * Math.PI;
+            const rotationAttribute = rootTransformElement && rootTransformElement.attributes.getNamedItem("rotation");
+            const rotationAttributeValues = rotationAttribute && rotationAttribute.value.split(" ").map(Number);
+            expect(rotationAttributeValues && rotationAttributeValues[0]).toBe(0);
+            expect(rotationAttributeValues && rotationAttributeValues[1]).toBe(0);
+            expect(rotationAttributeValues && rotationAttributeValues[2]).toBe(1);
+            expect(rotationAttributeValues && rotationAttributeValues[3]).toBeCloseTo(angle, 9);
         });
 
         it("should have a shape element representing the donut segment", () => {

@@ -55,8 +55,12 @@ export function donutChart3d<
             .join("group");
 
         const transform = group.selectAll("transform")
-            .data(d => [d])
-            .join("transform");
+            .data((d, i) => [{ data: d, index: i }])
+            .join("transform")
+              .attr("rotation", (d) => {
+                  const angle = data.slice(0, d.index).map(datum => datum.value).reduce((sum, value) => sum + value, 0) * valueToAngleRatio;
+                  return `0 0 1 ${angle}`
+              });
 
         const shape = transform.selectAll("shape")
             .data(d => [d])
@@ -65,7 +69,7 @@ export function donutChart3d<
         const torus = shape.selectAll("torus")
             .data(d => [d])
             .join("torus")
-              .attr("angle", d => d.value * valueToAngleRatio);
+              .attr("angle", d => d.data.value * valueToAngleRatio);
     };
 
     render.height = makeFluentD3GetSet(render, () => height, value => height = value);
