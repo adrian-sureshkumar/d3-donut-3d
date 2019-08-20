@@ -4,7 +4,7 @@
   "description": "Library for rendering 3D donut charts with D3",
   "main": "index.js",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc --project tsconfig.build.json",
     "bundle:examples": "browserify examples/donut-3d-example.js -o examples/donut-3d-example.bundle.js",
     "test": "jest",
     "test:watch": "npm run test -- --watch",
