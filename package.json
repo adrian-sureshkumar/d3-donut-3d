@@ -36,5 +36,20 @@
     "@types/d3": "^5.7.2",
     "d3": "^5.9.7",
     "x3dom": "^1.8.0"
+  },
+  "eslintConfig": {
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+      "project": "./tsconfig.json"
+    },
+    "plugins": [
+      "@typescript-eslint"
+    ],
+    "extends": [
+      "plugin:@typescript-eslint/recommended"
+    ]
+  },
+  "jest": {
+    "preset": "ts-jest"
   }
 }
