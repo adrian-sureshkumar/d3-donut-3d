@@ -46,6 +46,10 @@ export function donutChart3d<
         const scene = x3d.selectAll("scene")
             .data(d => [d])
             .join("scene");
+
+        const group = scene.selectAll("group")
+            .data(d => d)
+            .join("group");
     };
 
     render.height = makeFluentD3GetSet(render, () => height, value => height = value);

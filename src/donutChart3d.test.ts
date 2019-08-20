@@ -59,6 +59,7 @@ describe("when the chart is rendered", () => {
     let root: HTMLDivElement;
     let x3dElement: Element | null;
     let sceneElement: Element | null;
+    let groupElements: NodeListOf<Element>;
     let chart: RenderDonutChart3D<HTMLDivElement, null, null, undefined>;
 
     beforeAll(() => {
@@ -74,6 +75,7 @@ describe("when the chart is rendered", () => {
 
         x3dElement = root.querySelector("x3d");
         sceneElement = root.querySelector("x3d > scene");
+        groupElements = root.querySelectorAll("x3d > scene > group");
     });
 
     afterAll(() => {
@@ -96,5 +98,9 @@ describe("when the chart is rendered", () => {
 
     it("should create a scene element", () => {
         expect(sceneElement).not.toBeNull();
+    })
+
+    it("should create a group element for each datum", () => {
+        expect(groupElements).toHaveLength(data.length);
     })
 });
