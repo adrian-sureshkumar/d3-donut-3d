@@ -7,7 +7,7 @@ interface Render<
     Datum,
     PElement extends BaseType,
     PDatum
-> {
+    > {
     (selection: Selection<GElement, Datum, PElement, PDatum>): void;
 }
 
@@ -20,7 +20,7 @@ export interface RenderDonutChart3D<
     Datum,
     PElement extends BaseType,
     PDatum
-> extends Render<GElement, Datum, PElement, PDatum> {
+    > extends Render<GElement, Datum, PElement, PDatum> {
     data: FluentD3GetSet<this, Donut3DDatum[]>;
     height: FluentD3GetSet<this, string>;
     width: FluentD3GetSet<this, string>;
@@ -31,16 +31,21 @@ export function donutChart3d<
     Datum,
     PElement extends BaseType,
     PDatum
-> (): RenderDonutChart3D<GElement, Datum, PElement, PDatum> {
+>(): RenderDonutChart3D<GElement, Datum, PElement, PDatum> {
     let data: Donut3DDatum[] = [];
     let height = "600px";
     let width = "800px";
 
-    const render: RenderDonutChart3D<GElement, Datum, PElement, PDatum> = function(selection) {
+    const render: RenderDonutChart3D<GElement, Datum, PElement, PDatum> = function (selection) {
         const x3dDataJoin = selection.selectAll("x3d")
             .data([data]);
 
-        x3dDataJoin.enter().append("x3d");
+        x3dDataJoin.enter().append("x3d")
+            .merge(x3dDataJoin)
+              .attr("height", height)
+              .attr("width", width);
+
+        x3dDataJoin.remove();
     };
 
     render.height = makeFluentD3GetSet(render, () => height, value => height = value);

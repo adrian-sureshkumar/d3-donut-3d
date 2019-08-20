@@ -57,14 +57,21 @@ describe("property getters/setters", () => {
 
 describe("when the chart is rendered", () => {
     let root: HTMLDivElement;
+    let x3dElement: Element | null;
     let chart: RenderDonutChart3D<HTMLDivElement, null, null, undefined>;
 
     beforeEach(() => {
         root = document.createElement("div")
         document.body.append(root);
 
-        chart = donutChart3d<HTMLDivElement, null, null, undefined>();
+        chart = donutChart3d<HTMLDivElement, null, null, undefined>()
+            .data(data)
+            .height(height)
+            .width(width);
+
         chart(select(root));
+
+        x3dElement = root.querySelector("x3d");
     });
 
     afterEach(() => {
@@ -72,6 +79,16 @@ describe("when the chart is rendered", () => {
     });
 
     it("should create an x3d element", () => {
-        expect(root.querySelector("x3d")).not.toBeNull();
+        expect(x3dElement).not.toBeNull();
+    })
+
+    it("should set the height of the x3d element", () => {
+        const heightAttr = x3dElement && x3dElement.attributes.getNamedItem("height");
+        expect(heightAttr && heightAttr.value).toBe(height);
+    })
+
+    it("should set the width of the x3d element", () => {
+        const widthAttr = x3dElement && x3dElement.attributes.getNamedItem("width");
+        expect(widthAttr && widthAttr.value).toBe(width);
     })
 });
