@@ -54,6 +54,14 @@ export function donutChart3d<
         const transform = group.selectAll("transform")
             .data(d => [d])
             .join("transform");
+
+        const shape = transform.selectAll("shape")
+            .data(d => [d])
+            .join("shape");
+
+        const torus = shape.selectAll("torus")
+            .data(d => [d])
+            .join("torus");
     };
 
     render.height = makeFluentD3GetSet(render, () => height, value => height = value);

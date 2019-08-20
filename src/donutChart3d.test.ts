@@ -108,14 +108,26 @@ describe("when the chart is rendered", () => {
     ("group element %#", (i) => {
         let groupElement: Element;
         let rootTransformElement: Element | null;
+        let shapeElement: Element | null;
+        let torusElement: Element | null;
 
         beforeAll(() => {
             groupElement = groupElements[i];
             rootTransformElement = groupElement.querySelector("transform");
+            shapeElement = groupElement.querySelector("transform > shape");
+            torusElement = groupElement.querySelector("transform > shape > torus");
         });
 
         it("should have a root transform element", () => {
             expect(rootTransformElement).not.toBeNull();
+        });
+
+        it("should have a shape element representing the donut segment", () => {
+            expect(shapeElement).not.toBeNull();
+        });
+
+        it("should have a torus element", () => {
+            expect(torusElement).not.toBeNull();
         });
     });
 });
