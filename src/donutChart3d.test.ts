@@ -100,7 +100,22 @@ describe("when the chart is rendered", () => {
         expect(sceneElement).not.toBeNull();
     })
 
-    it("should create a group element for each datum", () => {
+    it("should create a group element representing each datum", () => {
         expect(groupElements).toHaveLength(data.length);
     })
+
+    describe.each(data.map((_, i) => (i)))
+    ("group element %#", (i) => {
+        let groupElement: Element;
+        let rootTransformElement: Element | null;
+
+        beforeAll(() => {
+            groupElement = groupElements[i];
+            rootTransformElement = groupElement.querySelector("transform");
+        });
+
+        it("should have a root transform element", () => {
+            expect(rootTransformElement).not.toBeNull();
+        });
+    });
 });
