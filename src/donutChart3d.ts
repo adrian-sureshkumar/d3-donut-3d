@@ -37,6 +37,9 @@ export function donutChart3d<
     let width: string | null = null;
 
     const render: RenderDonutChart3D<GElement, Datum, PElement, PDatum> = function (selection) {
+        const valueSum = data.map(datum => datum.value).reduce((sum, value) => sum + value, 0);
+        const valueToAngleRatio = 2 * Math.PI / valueSum;
+
         const x3d = selection.selectAll("x3d")
             .data([data])
             .join("x3d")
@@ -61,7 +64,8 @@ export function donutChart3d<
 
         const torus = shape.selectAll("torus")
             .data(d => [d])
-            .join("torus");
+            .join("torus")
+              .attr("angle", d => d.value * valueToAngleRatio);
     };
 
     render.height = makeFluentD3GetSet(render, () => height, value => height = value);

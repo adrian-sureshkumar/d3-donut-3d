@@ -4,11 +4,11 @@ import faker from "faker";
 import { donutChart3d, RenderDonutChart3D, Donut3DDatum } from "./donutChart3d";
 
 const data: Donut3DDatum[] = [{
-    value: faker.random.number()
+    value: 75
 }, {
-    value: faker.random.number()
+    value: 150
 }, {
-    value: faker.random.number()
+    value: 135
 }];
 
 const height = `${faker.random.number()}px`;
@@ -87,13 +87,13 @@ describe("when the chart is rendered", () => {
     })
 
     it("should set the height of the x3d element", () => {
-        const heightAttr = x3dElement && x3dElement.attributes.getNamedItem("height");
-        expect(heightAttr && heightAttr.value).toBe(height);
+        const heightAttribute = x3dElement && x3dElement.attributes.getNamedItem("height");
+        expect(heightAttribute && heightAttribute.value).toBe(height);
     })
 
     it("should set the width of the x3d element", () => {
-        const widthAttr = x3dElement && x3dElement.attributes.getNamedItem("width");
-        expect(widthAttr && widthAttr.value).toBe(width);
+        const widthAttribute = x3dElement && x3dElement.attributes.getNamedItem("width");
+        expect(widthAttribute && widthAttribute.value).toBe(width);
     })
 
     it("should create a scene element", () => {
@@ -126,8 +126,11 @@ describe("when the chart is rendered", () => {
             expect(shapeElement).not.toBeNull();
         });
 
-        it("should have a torus element", () => {
+        it("should have a torus element with the angle set to the donut segment size", () => {
             expect(torusElement).not.toBeNull();
+
+            const angleAttribute = torusElement && torusElement.attributes.getNamedItem("angle");
+            expect(angleAttribute && Number(angleAttribute.value)).toBeCloseTo((data[i].value / 360) * 2 * Math.PI, 9);
         });
     });
 });
