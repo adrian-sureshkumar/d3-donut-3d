@@ -58,8 +58,10 @@ export function donutChart3d<
             .data((d, i) => [{ data: d, index: i }])
             .join("transform")
               .attr("rotation", (d) => {
-                  const angle = data.slice(0, d.index).map(datum => datum.value).reduce((sum, value) => sum + value, 0) * valueToAngleRatio;
-                  return `0 0 1 ${angle}`
+                  const previousValueSum = data.slice(0, d.index)
+                    .map(datum => datum.value)
+                    .reduce((sum, value) => sum + value, 0);
+                  return `0 0 1 ${previousValueSum * valueToAngleRatio}`
               });
 
         const shape = transform.selectAll("shape")
