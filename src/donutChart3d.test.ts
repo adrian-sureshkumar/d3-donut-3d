@@ -5,13 +5,13 @@ import { donutChart3d, RenderDonutChart3D, Donut3DDatum } from "./donutChart3d";
 
 const data: Donut3DDatum[] = [{
     color: "red",
-    value: 75
+    value: 1
 }, {
     color: "rgba(0, 255, 0, 0.5)",
-    value: 150
+    value: 2
 }, {
     color: rgb(0, 0, 255, 0),
-    value: 135
+    value: 3
 }];
 
 const height = `${faker.random.number()}px`;
@@ -124,7 +124,7 @@ describe("when the chart is rendered", () => {
         it("should have a root transform element rotated about the z-axis to the start of the donut segment", () => {
             expect(rootTransformElement).not.toBeNull();
 
-            const angle = (data.slice(0, i).map(datum => datum.value).reduce((sum, value) => sum + value, 0) / 360) * 2 * Math.PI;
+            const angle = -(i === 0 ? 0 : i === 1 ? 1/6 : 1/2) * (2 * Math.PI);
             const rotationAttribute = rootTransformElement && rootTransformElement.attributes.getNamedItem("rotation");
             const rotationAttributeValues = rotationAttribute && rotationAttribute.value.split(" ").map(Number);
             expect(rotationAttributeValues && rotationAttributeValues[0]).toBe(0);
@@ -136,7 +136,7 @@ describe("when the chart is rendered", () => {
         it("should have a torus element with the angle set to the donut segment size", () => {
             expect(torusElement).not.toBeNull();
 
-            const angle = (data[i].value / 360) * 2 * Math.PI;
+            const angle = ((i + 1) / 6) * (2 * Math.PI);
             const angleAttribute = torusElement && torusElement.attributes.getNamedItem("angle");
             expect(angleAttribute && Number(angleAttribute.value)).toBeCloseTo(angle, 9);
         });

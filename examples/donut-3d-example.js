@@ -12,11 +12,14 @@ const chart = donutChart3d()
         color: "#0000FF",
         value: 135
     }, {
+        color: "#FF00FF",
+        value: 10
+    }, {
         color: "#FFFF00",
         value: 60
     }, {
-        color: "#FF00FF",
-        value: 30
+        color: "#00FFFF",
+        value: 20
     }])
     .height("600px")
     .width("800px");
