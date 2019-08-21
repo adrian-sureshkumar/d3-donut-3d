@@ -124,7 +124,7 @@ describe("when the chart is rendered", () => {
         it("should have a root transform element rotated about the z-axis to the start of the donut segment", () => {
             expect(rootTransformElement).not.toBeNull();
 
-            const angle = -(i === 0 ? 0 : i === 1 ? 1/6 : 1/2) * (2 * Math.PI);
+            const angle = (1/4 - (i === 0 ? 0 : i === 1 ? 1/6 : 1/2)) * (2 * Math.PI);
             const rotationAttribute = rootTransformElement && rootTransformElement.attributes.getNamedItem("rotation");
             const rotationAttributeValues = rotationAttribute && rotationAttribute.value.split(" ").map(Number);
             expect(rotationAttributeValues && rotationAttributeValues[0]).toBe(0);

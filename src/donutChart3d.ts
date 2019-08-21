@@ -62,7 +62,7 @@ export function donutChart3d<
                   const previousValueSum = data.slice(0, d.index)
                     .map(datum => datum.value)
                     .reduce((sum, value) => sum + value, 0);
-                  return `0 0 1 ${-previousValueSum * valueToAngleRatio}`
+                  return `0 0 1 ${(Math.PI / 2) - previousValueSum * valueToAngleRatio}`
               });
 
         const shape = transform.selectAll("shape")
