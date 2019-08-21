@@ -21,6 +21,7 @@ const chart = donutChart3d()
         color: "#00FFFF",
         value: 20
     }])
+    .labelFormat((name, value, percentage) => `${percentage.toFixed(0)}%`)
     .height("600px")
     .width("800px");
 

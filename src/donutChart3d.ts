@@ -35,18 +35,21 @@ export interface RenderDonutChart3D<
 
 interface DonutSegment {
     color: RGBColor;
+    label: string;
     length: number;
     start: number;
 }
 
-function getDonutSegments(data: Donut3DDatum[]): DonutSegment[] {
+function getDonutSegments(data: Donut3DDatum[], labelFormat: Donut3DLabelFormatter | null): DonutSegment[] {
     const donutSegments: DonutSegment[] = [];
 
     if (data.length) {
         const cumulativeValues = [0];
         data.forEach(datum => cumulativeValues.push(cumulativeValues[cumulativeValues.length - 1] + datum.value));
 
-        const valueToAngleRatio = 2 * Math.PI / cumulativeValues[cumulativeValues.length - 1];
+        const totalValue = cumulativeValues[cumulativeValues.length - 1];
+
+        const valueToAngleRatio = 2 * Math.PI / totalValue;
 
         for (let i = 0; i < data.length; i++) {
             const datum = data[i];
@@ -58,7 +61,9 @@ function getDonutSegments(data: Donut3DDatum[]): DonutSegment[] {
                 ? rgb(datum.color)
                 : datum.color.rgb();
 
-            donutSegments.push({ color, length, start });
+            const label = labelFormat ? labelFormat(datum.name || "", datum.value, datum.value / totalValue * 100) : "";
+
+            donutSegments.push({ color, length, label, start });
         }
     }
 
@@ -79,7 +84,7 @@ export function donutChart3d<
     const labelOffset = 2.5;
 
     const render: RenderDonutChart3D<GElement, Datum, PElement, PDatum> = function (selection) {
-        const donutSegments = getDonutSegments(data);
+        const donutSegments = getDonutSegments(data, labelFormat);
 
         const x3d = selection.selectAll("x3d")
             .data([donutSegments])
@@ -121,7 +126,7 @@ export function donutChart3d<
 
         transform.call(function renderLabel(s) {
             s.selectAll("transform")
-                .data(d => [d])
+                .data(d => d.label ? [d] : [])
                 .join("transform")
                   .attr("translation", `${labelOffset} 0 0`)
                   .attr("center", `${-labelOffset} 0 0`)
@@ -157,7 +162,7 @@ export function donutChart3d<
                     shape.selectAll("text")
                         .data(d => [d])
                         .join("text")
-                          .attr("string", d => d.length)
+                          .attr("string", d => d.label)
                           .attr("solid", false)
                         .selectAll("fontstyle")
                         .data(d => [d])
