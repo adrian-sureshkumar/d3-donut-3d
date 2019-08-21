@@ -7,7 +7,7 @@ interface Render<
     Datum,
     PElement extends BaseType,
     PDatum
-    > {
+> {
     (selection: Selection<GElement, Datum, PElement, PDatum>): void;
 }
 
@@ -21,7 +21,7 @@ export interface RenderDonutChart3D<
     Datum,
     PElement extends BaseType,
     PDatum
-    > extends Render<GElement, Datum, PElement, PDatum> {
+> extends Render<GElement, Datum, PElement, PDatum> {
     data: FluentD3GetSet<this, Donut3DDatum[]>;
     height: FluentD3GetSet<this, string | null>;
     width: FluentD3GetSet<this, string | null>;
@@ -60,8 +60,8 @@ export function donutChart3d<
             .join("transform")
               .attr("rotation", (d) => {
                   const previousValueSum = data.slice(0, d.index)
-                    .map(datum => datum.value)
-                    .reduce((sum, value) => sum + value, 0);
+                      .map(datum => datum.value)
+                      .reduce((sum, value) => sum + value, 0);
                   return `0 0 1 ${(Math.PI / 2) - previousValueSum * valueToAngleRatio}`
               });
 
@@ -84,8 +84,8 @@ export function donutChart3d<
               .attr("diffuseColor", d => {
                   const rgbColor = typeof d.data.color === "string" ? rgb(d.data.color) : d.data.color.rgb();
                   return `${rgbColor.r / 255} ${rgbColor.g / 255} ${rgbColor.b / 255}`;
-               })
-               .attr("transparency", d => {
+              })
+              .attr("transparency", d => {
                   const rgbColor = typeof d.data.color === "string" ? rgb(d.data.color) : d.data.color.rgb();
                   return `${1 - rgbColor.opacity}`;
               });
