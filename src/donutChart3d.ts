@@ -1,4 +1,4 @@
-import { Selection, BaseType } from "d3";
+import { Selection, BaseType, rgb, RGBColor, HSLColor } from "d3";
 
 import { FluentD3GetSet, makeFluentD3GetSet } from "./fluentD3GetSet";
 
@@ -12,6 +12,7 @@ interface Render<
 }
 
 export interface Donut3DDatum {
+    color: string | RGBColor | HSLColor;
     value: number;
 }
 
@@ -72,6 +73,22 @@ export function donutChart3d<
             .data(d => [d])
             .join("torus")
               .attr("angle", d => d.data.value * valueToAngleRatio);
+
+        const appearance = shape.selectAll("appearance")
+            .data(d => [d])
+            .join("appearance");
+
+        const material = appearance.selectAll("material")
+            .data(d => [d])
+            .join("material")
+              .attr("diffuseColor", d => {
+                  const rgbColor = typeof d.data.color === "string" ? rgb(d.data.color) : d.data.color.rgb();
+                  return `${rgbColor.r / 255} ${rgbColor.g / 255} ${rgbColor.b / 255}`;
+               })
+               .attr("transparency", d => {
+                  const rgbColor = typeof d.data.color === "string" ? rgb(d.data.color) : d.data.color.rgb();
+                  return `${1 - rgbColor.opacity}`;
+              });
     };
 
     render.height = makeFluentD3GetSet(render, () => height, value => height = value);

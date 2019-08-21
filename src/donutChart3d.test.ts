@@ -1,13 +1,16 @@
-import { select, BaseType } from "d3";
+import { select, BaseType, rgb } from "d3";
 import faker from "faker";
 
 import { donutChart3d, RenderDonutChart3D, Donut3DDatum } from "./donutChart3d";
 
 const data: Donut3DDatum[] = [{
+    color: "red",
     value: 75
 }, {
+    color: "rgba(0, 255, 0, 0.5)",
     value: 150
 }, {
+    color: rgb(0, 0, 255, 0),
     value: 135
 }];
 
@@ -108,14 +111,14 @@ describe("when the chart is rendered", () => {
     ("group element %#", (i) => {
         let groupElement: Element;
         let rootTransformElement: Element | null;
-        let shapeElement: Element | null;
         let torusElement: Element | null;
+        let materialElement: Element | null;
 
         beforeAll(() => {
             groupElement = groupElements[i];
             rootTransformElement = groupElement.querySelector("transform");
-            shapeElement = groupElement.querySelector("transform > shape");
             torusElement = groupElement.querySelector("transform > shape > torus");
+            materialElement = groupElement.querySelector("transform > shape > appearance > material");
         });
 
         it("should have a root transform element rotated about the z-axis to the start of the donut segment", () => {
@@ -130,16 +133,31 @@ describe("when the chart is rendered", () => {
             expect(rotationAttributeValues && rotationAttributeValues[3]).toBeCloseTo(angle, 9);
         });
 
-        it("should have a shape element representing the donut segment", () => {
-            expect(shapeElement).not.toBeNull();
-        });
-
         it("should have a torus element with the angle set to the donut segment size", () => {
             expect(torusElement).not.toBeNull();
 
             const angle = (data[i].value / 360) * 2 * Math.PI;
             const angleAttribute = torusElement && torusElement.attributes.getNamedItem("angle");
             expect(angleAttribute && Number(angleAttribute.value)).toBeCloseTo(angle, 9);
+        });
+
+        it("should have a material element representing the color of the donut segment", () => {
+            expect(materialElement).not.toBeNull();
+
+            const red = i === 0 ? 1 : 0;
+            const green = i === 1 ? 1 : 0;
+            const blue = i === 2 ? 1 : 0;
+            const transparency = i / 2;
+
+            const diffuseColorAttribute = materialElement && materialElement.attributes.getNamedItem("diffuseColor");
+            const diffuseColorAttributeValues = diffuseColorAttribute && diffuseColorAttribute.value.split(" ").map(Number);
+            expect(diffuseColorAttributeValues && diffuseColorAttributeValues[0]).toBeCloseTo(red, 9);
+            expect(diffuseColorAttributeValues && diffuseColorAttributeValues[1]).toBeCloseTo(green, 9);
+            expect(diffuseColorAttributeValues && diffuseColorAttributeValues[2]).toBeCloseTo(blue, 9);
+
+            const transparencyAttribute = materialElement && materialElement.attributes.getNamedItem("transparency");
+            const transparencyAttributeValue = transparencyAttribute && Number(transparencyAttribute.value);
+            expect(transparencyAttributeValue).toBeCloseTo(transparency, 9);
         });
     });
 });
