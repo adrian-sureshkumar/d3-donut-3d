@@ -1,7 +1,7 @@
 import { select, BaseType, rgb } from "d3";
 import faker from "faker";
 
-import { donutChart3d, RenderDonutChart3D, Donut3DDatum } from "./donutChart3d";
+import { donutChart3d, RenderDonutChart3D, Donut3DDatum, Donut3DLabelFormatter } from "./donutChart3d";
 
 const data: Donut3DDatum[] = [{
     color: "red",
@@ -14,6 +14,8 @@ const data: Donut3DDatum[] = [{
     value: 3
 }];
 
+const labelFormat: Donut3DLabelFormatter = (name, value, percentage) => `${name}: ${value} (${percentage})`;
+
 const height = `${faker.random.number()}px`;
 const width = `${faker.random.number()}px`;
 
@@ -25,10 +27,11 @@ describe("property getters/setters", () => {
     });
 
     describe.each`
-        property    | defaultValue | value
-        ${"data"}   | ${[]}        | ${data}
-        ${"height"} | ${null}      | ${height}
-        ${"width"}  | ${null}      | ${width}
+        property         | defaultValue | value
+        ${"data"}        | ${[]}        | ${data}
+        ${"height"}      | ${null}      | ${height}
+        ${"labelFormat"} | ${null}      | ${labelFormat}
+        ${"width"}       | ${null}      | ${width}
     `("$property", ({ property, defaultValue, value }: {
         property: keyof typeof chart;
         defaultValue: any;

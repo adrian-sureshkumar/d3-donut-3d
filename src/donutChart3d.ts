@@ -13,7 +13,12 @@ interface Render<
 
 export interface Donut3DDatum {
     color: string | RGBColor | HSLColor;
+    name?: string;
     value: number;
+}
+
+export interface Donut3DLabelFormatter {
+    (name: string, value: number, percentage: number): string;
 }
 
 export interface RenderDonutChart3D<
@@ -24,6 +29,7 @@ export interface RenderDonutChart3D<
 > extends Render<GElement, Datum, PElement, PDatum> {
     data: FluentD3GetSet<this, Donut3DDatum[]>;
     height: FluentD3GetSet<this, string | null>;
+    labelFormat: FluentD3GetSet<this, Donut3DLabelFormatter | null>;
     width: FluentD3GetSet<this, string | null>;
 }
 
@@ -67,6 +73,7 @@ export function donutChart3d<
 >(): RenderDonutChart3D<GElement, Datum, PElement, PDatum> {
     let data: Donut3DDatum[] = [];
     let height: string | null = null;
+    let labelFormat: Donut3DLabelFormatter | null = null;
     let width: string | null = null;
 
     const render: RenderDonutChart3D<GElement, Datum, PElement, PDatum> = function (selection) {
@@ -111,9 +118,10 @@ export function donutChart3d<
               .attr("transparency", d => `${1 - d.color.opacity}`);
     };
 
-    render.height = makeFluentD3GetSet(render, () => height, value => height = value);
-    render.width = makeFluentD3GetSet(render, () => width, value => width = value);
     render.data = makeFluentD3GetSet(render, () => data, value => data = value);
+    render.height = makeFluentD3GetSet(render, () => height, value => height = value);
+    render.labelFormat = makeFluentD3GetSet(render, () => labelFormat, value => labelFormat = value);
+    render.width = makeFluentD3GetSet(render, () => width, value => width = value);
 
     return render;
 }
