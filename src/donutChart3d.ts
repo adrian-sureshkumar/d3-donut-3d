@@ -27,6 +27,38 @@ export interface RenderDonutChart3D<
     width: FluentD3GetSet<this, string | null>;
 }
 
+interface DonutSegment {
+    color: RGBColor;
+    length: number;
+    start: number;
+}
+
+function getDonutSegments(data: Donut3DDatum[]): DonutSegment[] {
+    const donutSegments: DonutSegment[] = [];
+
+    if (data.length) {
+        const cumulativeValues = [0];
+        data.forEach(datum => cumulativeValues.push(cumulativeValues[cumulativeValues.length - 1] + datum.value));
+
+        const valueToAngleRatio = 2 * Math.PI / cumulativeValues[cumulativeValues.length - 1];
+
+        for (let i = 0; i < data.length; i++) {
+            const datum = data[i];
+
+            const start = cumulativeValues[i] * valueToAngleRatio;
+            const length = datum.value * valueToAngleRatio;
+
+            const color = typeof datum.color === "string"
+                ? rgb(datum.color)
+                : datum.color.rgb();
+
+            donutSegments.push({ color, length, start });
+        }
+    }
+
+    return donutSegments;
+}
+
 export function donutChart3d<
     GElement extends BaseType,
     Datum,
@@ -38,11 +70,10 @@ export function donutChart3d<
     let width: string | null = null;
 
     const render: RenderDonutChart3D<GElement, Datum, PElement, PDatum> = function (selection) {
-        const valueSum = data.map(datum => datum.value).reduce((sum, value) => sum + value, 0);
-        const valueToAngleRatio = 2 * Math.PI / valueSum;
+        const donutSegments = getDonutSegments(data);
 
         const x3d = selection.selectAll("x3d")
-            .data([data])
+            .data([donutSegments])
             .join("x3d")
               .attr("height", () => height)
               .attr("width", () => width);
@@ -56,14 +87,9 @@ export function donutChart3d<
             .join("group");
 
         const transform = group.selectAll("transform")
-            .data((d, i) => [{ data: d, index: i }])
+            .data(d => [d])
             .join("transform")
-              .attr("rotation", (d) => {
-                  const previousValueSum = data.slice(0, d.index)
-                      .map(datum => datum.value)
-                      .reduce((sum, value) => sum + value, 0);
-                  return `0 0 1 ${(Math.PI / 2) - previousValueSum * valueToAngleRatio}`
-              });
+              .attr("rotation", d => `0 0 1 ${(Math.PI / 2) - d.start}`);
 
         const shape = transform.selectAll("shape")
             .data(d => [d])
@@ -72,7 +98,7 @@ export function donutChart3d<
         const torus = shape.selectAll("torus")
             .data(d => [d])
             .join("torus")
-              .attr("angle", d => d.data.value * valueToAngleRatio);
+              .attr("angle", d => d.length);
 
         const appearance = shape.selectAll("appearance")
             .data(d => [d])
@@ -81,14 +107,8 @@ export function donutChart3d<
         const material = appearance.selectAll("material")
             .data(d => [d])
             .join("material")
-              .attr("diffuseColor", d => {
-                  const rgbColor = typeof d.data.color === "string" ? rgb(d.data.color) : d.data.color.rgb();
-                  return `${rgbColor.r / 255} ${rgbColor.g / 255} ${rgbColor.b / 255}`;
-              })
-              .attr("transparency", d => {
-                  const rgbColor = typeof d.data.color === "string" ? rgb(d.data.color) : d.data.color.rgb();
-                  return `${1 - rgbColor.opacity}`;
-              });
+              .attr("diffuseColor", d => `${d.color.r / 255} ${d.color.g / 255} ${d.color.b / 255}`)
+              .attr("transparency", d => `${1 - d.color.opacity}`);
     };
 
     render.height = makeFluentD3GetSet(render, () => height, value => height = value);
@@ -96,5 +116,4 @@ export function donutChart3d<
     render.data = makeFluentD3GetSet(render, () => data, value => data = value);
 
     return render;
-};
-
+}
