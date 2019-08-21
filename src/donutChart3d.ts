@@ -1,4 +1,4 @@
-import { Selection, BaseType, rgb, RGBColor, HSLColor } from "d3";
+import { Selection, BaseType, rgb, RGBColor, HSLColor, select } from "d3";
 
 import { FluentD3GetSet, makeFluentD3GetSet } from "./fluentD3GetSet";
 
@@ -76,6 +76,8 @@ export function donutChart3d<
     let labelFormat: Donut3DLabelFormatter | null = null;
     let width: string | null = null;
 
+    const labelOffset = 2.5;
+
     const render: RenderDonutChart3D<GElement, Datum, PElement, PDatum> = function (selection) {
         const donutSegments = getDonutSegments(data);
 
@@ -116,6 +118,55 @@ export function donutChart3d<
             .join("material")
               .attr("diffuseColor", d => `${d.color.r / 255} ${d.color.g / 255} ${d.color.b / 255}`)
               .attr("transparency", d => `${1 - d.color.opacity}`);
+
+        transform.call(function renderLabel(s) {
+            s.selectAll("transform")
+                .data(d => [d])
+                .join("transform")
+                  .attr("translation", `${labelOffset} 0 0`)
+                  .attr("center", `${-labelOffset} 0 0`)
+                  .attr("rotation", d => `0 0 1 ${-d.length / 2}`)
+                .call(function renderLine(s) {
+                    s.selectAll("shape.label-line")
+                    .data(d => [d])
+                    .join("shape")
+                      .attr("class", "label-line")
+                    .selectAll("lineset")
+                    .data(d => [d])
+                    .join("lineset")
+                      .attr("vertexCount", "3 3")
+                    .selectAll("coordinate")
+                    .data(d => [d])
+                    .join("coordinate")
+                      .attr("point", "0 0 0 -1 0 0");
+                })
+                .call(function renderText(selection) {
+                    const shape = selection.selectAll("shape.label-text")
+                        .data(d => [d])
+                        .join("shape")
+                          .attr("class", "label-text");
+
+                    shape.selectAll("appearance")
+                        .data(d => [d])
+                        .join("appearance")
+                        .selectAll("material")
+                        .data(d => [d])
+                        .join("material")
+                          .attr("diffuseColor", "0 0 0");
+
+                    shape.selectAll("text")
+                        .data(d => [d])
+                        .join("text")
+                          .attr("string", d => d.length)
+                          .attr("solid", false)
+                        .selectAll("fontstyle")
+                        .data(d => [d])
+                        .join("fontstyle")
+                          .attr("family", "sans-serif")
+                          .attr("justify", '"begin" "middle"')
+                          .attr("size", "0.25");
+                });
+            });
     };
 
     render.data = makeFluentD3GetSet(render, () => data, value => data = value);
