@@ -34,7 +34,7 @@ const chart = donutChart3d()
     .width("800px");
 
 function render() {
-    data.forEach(datum => datum.value *= 1 + Math.random() / 4);
+    data.forEach(datum => datum.value = Math.random());
     d3.select("#chart-root").call(chart);
 }
 
