@@ -2,12 +2,7 @@ import { Selection, BaseType, rgb, RGBColor, HSLColor, select } from "d3";
 
 import { FluentD3GetSet, makeFluentD3GetSet } from "./fluentD3GetSet";
 
-interface Render<
-    GElement extends BaseType,
-    Datum,
-    PElement extends BaseType,
-    PDatum
-> {
+interface Render<GElement extends BaseType, Datum, PElement extends BaseType, PDatum> {
     (selection: Selection<GElement, Datum, PElement, PDatum>): void;
 }
 
@@ -21,12 +16,8 @@ export interface Donut3DLabelFormatter {
     (name: string, value: number, percentage: number): string;
 }
 
-export interface RenderDonutChart3D<
-    GElement extends BaseType,
-    Datum,
-    PElement extends BaseType,
-    PDatum
-> extends Render<GElement, Datum, PElement, PDatum> {
+export interface RenderDonutChart3D<GElement extends BaseType, Datum, PElement extends BaseType, PDatum>
+    extends Render<GElement, Datum, PElement, PDatum> {
     data: FluentD3GetSet<this, Donut3DDatum[]>;
     height: FluentD3GetSet<this, string | null>;
     labelFormat: FluentD3GetSet<this, Donut3DLabelFormatter | null>;
