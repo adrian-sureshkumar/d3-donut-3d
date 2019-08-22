@@ -1,4 +1,4 @@
-import { select, BaseType, rgb } from "d3";
+import { select, BaseType, rgb, timerFlush } from "d3";
 import faker from "faker";
 
 import { donutChart3d, RenderDonutChart3D, Donut3DDatum, Donut3DLabelFormatter } from "./donutChart3d";
@@ -82,6 +82,8 @@ describe("when the chart is rendered", () => {
         x3dElement = root.querySelector("x3d");
         sceneElement = root.querySelector("x3d > scene");
         groupElements = root.querySelectorAll("x3d > scene > group");
+
+        timerFlush();
     });
 
     afterAll(() => {
