@@ -86,53 +86,46 @@ export function donutChart3d<
     const render: RenderDonutChart3D<GElement, Datum, PElement, PDatum> = function (selection) {
         const donutSegments = getDonutSegments(data, labelFormat);
 
-        const x3d = selection.selectAll("x3d")
+        selection.selectAll("x3d")
             .data([donutSegments])
             .join("x3d")
               .attr("height", () => height)
-              .attr("width", () => width);
-
-        const scene = x3d.selectAll("scene")
+              .attr("width", () => width)
+            .selectAll("scene")
             .data(d => [d])
-            .join("scene");
-
-        const group = scene.selectAll("group")
+            .join("scene")
+            .selectAll("group")
             .data(d => d)
-            .join("group");
-
-        const transform = group.selectAll("transform")
+            .join("group")
+            .selectAll("transform")
             .data(d => [d])
             .join("transform")
-              .attr("rotation", d => `0 0 1 ${(Math.PI / 2) - d.start}`);
-
-        const shape = transform.selectAll("shape")
-            .data(d => [d])
-            .join("shape");
-
-        const torus = shape.selectAll("torus")
-            .data(d => [d])
-            .join("torus")
-              .attr("angle", d => d.length);
-
-        const appearance = shape.selectAll("appearance")
-            .data(d => [d])
-            .join("appearance");
-
-        const material = appearance.selectAll("material")
-            .data(d => [d])
-            .join("material")
-              .attr("diffuseColor", d => `${d.color.r / 255} ${d.color.g / 255} ${d.color.b / 255}`)
-              .attr("transparency", d => `${1 - d.color.opacity}`);
-
-        transform.call(function renderLabel(s) {
-            s.selectAll("transform")
+              .attr("rotation", d => `0 0 1 ${(Math.PI / 2) - d.start}`)
+            .call(s => s.selectAll("shape")
+                .data(d => [d])
+                .join("shape")
+                .call(s => s.selectAll("torus")
+                    .data(d => [d])
+                    .join("torus")
+                      .attr("angle", d => d.length)
+                )
+                .call(s => s.selectAll("appearance")
+                    .data(d => [d])
+                    .join("appearance")
+                    .selectAll("material")
+                    .data(d => [d])
+                    .join("material")
+                      .attr("diffuseColor", d => `${d.color.r / 255} ${d.color.g / 255} ${d.color.b / 255}`)
+                      .attr("transparency", d => `${1 - d.color.opacity}`)
+                )
+            )
+            .call(s => s.selectAll("transform")
                 .data(d => d.label ? [d] : [])
                 .join("transform")
                   .attr("translation", `${labelOffset} 0 0`)
                   .attr("center", `${-labelOffset} 0 0`)
                   .attr("rotation", d => `0 0 1 ${-d.length / 2}`)
-                .call(function renderLine(s) {
-                    s.selectAll("shape.label-line")
+                .call(s => s.selectAll("shape.label-line")
                     .data(d => [d])
                     .join("shape")
                       .attr("class", "label-line")
@@ -143,23 +136,21 @@ export function donutChart3d<
                     .selectAll("coordinate")
                     .data(d => [d])
                     .join("coordinate")
-                      .attr("point", "0 0 0 -1 0 0");
-                })
-                .call(function renderText(selection) {
-                    const shape = selection.selectAll("shape.label-text")
-                        .data(d => [d])
-                        .join("shape")
-                          .attr("class", "label-text");
-
-                    shape.selectAll("appearance")
+                      .attr("point", "0 0 0 -1 0 0")
+                )
+                .call(s => s.selectAll("shape.label-text")
+                    .data(d => [d])
+                    .join("shape")
+                      .attr("class", "label-text")
+                    .call(s => s.selectAll("appearance")
                         .data(d => [d])
                         .join("appearance")
                         .selectAll("material")
                         .data(d => [d])
                         .join("material")
-                          .attr("diffuseColor", "0 0 0");
-
-                    shape.selectAll("text")
+                          .attr("diffuseColor", "0 0 0")
+                    )
+                    .call(s => s.selectAll("text")
                         .data(d => [d])
                         .join("text")
                           .attr("string", d => d.label)
@@ -169,10 +160,11 @@ export function donutChart3d<
                         .join("fontstyle")
                           .attr("family", "sans-serif")
                           .attr("justify", '"begin" "middle"')
-                          .attr("size", "0.25");
-                });
-            });
-    };
+                          .attr("size", "0.25")
+                    )
+                )
+            );
+    }
 
     render.data = makeFluentD3GetSet(render, () => data, value => data = value);
     render.height = makeFluentD3GetSet(render, () => height, value => height = value);
