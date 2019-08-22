@@ -115,7 +115,10 @@ function renderDonutSegment<GElement extends BaseType, PElement extends BaseType
     s.selectAll("transform")
     .data(d => [d])
     .join("transform")
-      .attr("rotation", d => `0 0 1 ${(Math.PI / 2) - d.start}`)
+    .call(s =>
+        s.transition()
+          .attr("rotation", d => `0 0 1 ${(Math.PI / 2) - d.start}`)
+    )
     .call(s =>
         s.selectAll("shape")
         .data(d => [d])
@@ -124,7 +127,9 @@ function renderDonutSegment<GElement extends BaseType, PElement extends BaseType
             s.selectAll("torus")
             .data(d => [d])
             .join("torus")
-              .attr("angle", d => d.length)
+              .attr("useGeoCache", false)
+            .transition()
+              .attr("angle", d => `${d.length}`)
         )
         .call(s =>
             s.selectAll("appearance")
