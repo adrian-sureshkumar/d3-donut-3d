@@ -78,12 +78,11 @@ describe("when the chart is rendered", () => {
             .width(width);
 
         chart(select(root));
+        timerFlush();
 
         x3dElement = root.querySelector("x3d");
         sceneElement = root.querySelector("x3d > scene");
         groupElements = root.querySelectorAll("x3d > scene > group");
-
-        timerFlush();
     });
 
     afterAll(() => {
