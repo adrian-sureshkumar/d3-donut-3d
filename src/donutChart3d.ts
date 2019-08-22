@@ -83,7 +83,7 @@ export function donutChart3d<
 
     const labelOffset = 2.5;
 
-    const render: RenderDonutChart3D<GElement, Datum, PElement, PDatum> = function (s) {
+    const render: RenderDonutChart3D<GElement, Datum, PElement, PDatum> = (s) => {
         const donutSegments = getDonutSegments(data, labelFormat);
 
         s.selectAll("x3d")
@@ -91,92 +91,100 @@ export function donutChart3d<
         .join("x3d")
           .attr("height", () => height)
           .attr("width", () => width)
-
-        .selectAll("scene")
-        .data(d => [d])
-        .join("scene")
-
-        .selectAll("group")
-        .data(d => d)
-        .join("group")
-
-        .selectAll("transform")
-        .data(d => [d])
-        .join("transform")
-          .attr("rotation", d => `0 0 1 ${(Math.PI / 2) - d.start}`)
-
-        .call(s => s.selectAll("shape")
+        .call(s =>
+            s.selectAll("scene")
             .data(d => [d])
-            .join("shape")
-
-            .call(s => s.selectAll("torus")
-                .data(d => [d])
-                .join("torus")
-                  .attr("angle", d => d.length)
-            )
-
-            .call(s => s.selectAll("appearance")
-                .data(d => [d])
-                .join("appearance")
-
-                .selectAll("material")
-                .data(d => [d])
-                .join("material")
-                  .attr("diffuseColor", d => `${d.color.r / 255} ${d.color.g / 255} ${d.color.b / 255}`)
-                  .attr("transparency", d => `${1 - d.color.opacity}`)
-            )
-        )
-
-        .call(s => s.selectAll("transform")
-            .data(d => d.label ? [d] : [])
-            .join("transform")
-              .attr("translation", `${labelOffset} 0 0`)
-              .attr("center", `${-labelOffset} 0 0`)
-              .attr("rotation", d => `0 0 1 ${-d.length / 2}`)
-
-            .call(s => s.selectAll("shape.label-line")
-                .data(d => [d])
-                .join("shape")
-                  .attr("class", "label-line")
-
-                .selectAll("lineset")
-                .data(d => [d])
-                .join("lineset")
-                  .attr("vertexCount", "3 3")
-
-                .selectAll("coordinate")
-                .data(d => [d])
-                .join("coordinate")
-                  .attr("point", "0 0 0 -1 0 0")
-            )
-
-            .call(s => s.selectAll("shape.label-text")
-                .data(d => [d])
-                .join("shape")
-                  .attr("class", "label-text")
-
-                .call(s => s.selectAll("appearance")
+            .join("scene")
+            .call(s =>
+                s.selectAll("group")
+                .data(d => d)
+                .join("group")
+                .call(s =>
+                    s.selectAll("transform")
                     .data(d => [d])
-                    .join("appearance")
-
-                    .selectAll("material")
-                    .data(d => [d])
-                    .join("material")
-                      .attr("diffuseColor", "0 0 0")
-                )
-
-                .call(s => s.selectAll("text")
-                    .data(d => [d])
-                    .join("text")
-                      .attr("string", d => d.label)
-                      .attr("solid", false)
-
-                    .selectAll("fontstyle")
-                    .data(d => [d])
-                    .join("fontstyle")
-                      .attr("family", "sans-serif")
-                      .attr("justify", '"begin" "middle"')
-                      .attr("size", "0.25")
+                    .join("transform")
+                      .attr("rotation", d => `0 0 1 ${(Math.PI / 2) - d.start}`)
+                    .call(s =>
+                        s.selectAll("shape")
+                        .data(d => [d])
+                        .join("shape")
+                        .call(s =>
+                            s.selectAll("torus")
+                            .data(d => [d])
+                            .join("torus")
+                              .attr("angle", d => d.length)
+                        )
+                        .call(s =>
+                            s.selectAll("appearance")
+                            .data(d => [d])
+                            .join("appearance")
+                            .call(s =>
+                                s.selectAll("material")
+                                .data(d => [d])
+                                .join("material")
+                                  .attr("diffuseColor", d => `${d.color.r / 255} ${d.color.g / 255} ${d.color.b / 255}`)
+                                  .attr("transparency", d => `${1 - d.color.opacity}`)
+                            )
+                        )
+                    )
+                    .call(s =>
+                        s.selectAll("transform")
+                        .data(d => d.label ? [d] : [])
+                        .join("transform")
+                          .attr("translation", `${labelOffset} 0 0`)
+                          .attr("center", `${-labelOffset} 0 0`)
+                          .attr("rotation", d => `0 0 1 ${-d.length / 2}`)
+                        .call(s =>
+                            s.selectAll("shape.label-line")
+                            .data(d => [d])
+                            .join("shape")
+                              .attr("class", "label-line")
+                            .call(s =>
+                                s.selectAll("lineset")
+                                .data(d => [d])
+                                .join("lineset")
+                                  .attr("vertexCount", "3 3")
+                                .call(s =>
+                                    s.selectAll("coordinate")
+                                    .data(d => [d])
+                                    .join("coordinate")
+                                      .attr("point", "0 0 0 -1 0 0")
+                                )
+                            )
+                        )
+                        .call(s =>
+                            s.selectAll("shape.label-text")
+                            .data(d => [d])
+                            .join("shape")
+                              .attr("class", "label-text")
+                            .call(s =>
+                                s.selectAll("appearance")
+                                .data(d => [d])
+                                .join("appearance")
+                                .call(s =>
+                                    s.selectAll("material")
+                                    .data(d => [d])
+                                    .join("material")
+                                      .attr("diffuseColor", "0 0 0")
+                                )
+                            )
+                            .call(s =>
+                                s.selectAll("text")
+                                .data(d => [d])
+                                .join("text")
+                                  .attr("string", d => d.label)
+                                  .attr("solid", false)
+                                .call(s =>
+                                    s.selectAll("fontstyle")
+                                    .data(d => [d])
+                                    .join("fontstyle")
+                                      .attr("family", "sans-serif")
+                                      .attr("justify", '"begin" "middle"')
+                                      .attr("size", "0.25")
+                                )
+                            )
+                        )
+                    )
                 )
             )
         );
