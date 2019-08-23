@@ -90,8 +90,8 @@ function renderX3D<GElement extends BaseType, Datum, PElement extends BaseType, 
     s.selectAll("x3d")
     .data([donutSegments])
     .join("x3d")
-      .attr("height", () => height)
-      .attr("width", () => width)
+      .style("height", () => height)
+      .style("width", () => width)
     .call(renderScene);
 }
 

@@ -63,9 +63,9 @@ describe("property getters/setters", () => {
 
 describe("when the chart is rendered", () => {
     let root: HTMLDivElement;
-    let x3dElement: Element | null;
-    let sceneElement: Element | null;
-    let donutChartElement: Element | null;
+    let x3dElement: HTMLElement | null;
+    let sceneElement: HTMLElement | null;
+    let donutChartElement: HTMLElement | null;
     let chart: RenderDonutChart3D<HTMLDivElement, null, null, undefined>;
 
     beforeAll(() => {
@@ -94,13 +94,11 @@ describe("when the chart is rendered", () => {
     })
 
     it("should set the height of the x3d element", () => {
-        const heightAttribute = x3dElement && x3dElement.attributes.getNamedItem("height");
-        expect(heightAttribute && heightAttribute.value).toBe(height);
+        expect(x3dElement && x3dElement.style.height).toBe(height);
     })
 
     it("should set the width of the x3d element", () => {
-        const widthAttribute = x3dElement && x3dElement.attributes.getNamedItem("width");
-        expect(widthAttribute && widthAttribute.value).toBe(width);
+        expect(x3dElement && x3dElement.style.width).toBe(width);
     })
 
     it("should create a scene element", () => {
@@ -117,9 +115,9 @@ describe("when the chart is rendered", () => {
 
     describe.each(data.map((_, i) => (i)))
     ("donut chart segment element %#", (i) => {
-        let rootTransformElement: Element | null;
-        let torusElement: Element | null;
-        let materialElement: Element | null;
+        let rootTransformElement: HTMLElement | null;
+        let torusElement: HTMLElement | null;
+        let materialElement: HTMLElement | null;
 
         beforeAll(() => {
             rootTransformElement = donutChartElement && donutChartElement.querySelector(`transform:nth-child(${i + 1})`);

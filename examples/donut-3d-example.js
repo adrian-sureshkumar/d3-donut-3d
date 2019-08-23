@@ -10,15 +10,17 @@ const data = Array(10).fill(null).map((_, i) => ({
     value: 1
 }));
 
+const chartRoot = d3.select("#chart-root");
+
 const chart = donutChart3d()
     .data(data)
     .labelFormat((name, value, percentage) => `${name} (${percentage.toFixed(0)}%)`)
-    .height("600px")
-    .width("800px");
+    .height(`100%`)
+    .width(`100%`);
 
 function render() {
     data.forEach(datum => datum.value = Math.random());
-    d3.select("#chart-root").call(chart);
+    chartRoot.call(chart);
 }
 
 render();
