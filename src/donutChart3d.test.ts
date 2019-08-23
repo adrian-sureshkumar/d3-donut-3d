@@ -65,7 +65,7 @@ describe("when the chart is rendered", () => {
     let root: HTMLDivElement;
     let x3dElement: Element | null;
     let sceneElement: Element | null;
-    let groupElements: NodeListOf<Element>;
+    let donutChartElement: Element | null;
     let chart: RenderDonutChart3D<HTMLDivElement, null, null, undefined>;
 
     beforeAll(() => {
@@ -82,7 +82,7 @@ describe("when the chart is rendered", () => {
 
         x3dElement = root.querySelector("x3d");
         sceneElement = root.querySelector("x3d > scene");
-        groupElements = root.querySelectorAll("x3d > scene > group");
+        donutChartElement = root.querySelector("x3d > scene > .donut-chart");
     });
 
     afterAll(() => {
@@ -107,22 +107,24 @@ describe("when the chart is rendered", () => {
         expect(sceneElement).not.toBeNull();
     })
 
-    it("should create a group element representing each datum", () => {
-        expect(groupElements).toHaveLength(data.length);
+    it("should create a root element for the donut chart", () => {
+        expect(donutChartElement).not.toBeNull();
+    })
+
+    it("should create an element representing each donut chart segment", () => {
+        expect(donutChartElement && donutChartElement.childNodes).toHaveLength(data.length);
     })
 
     describe.each(data.map((_, i) => (i)))
-    ("group element %#", (i) => {
-        let groupElement: Element;
+    ("donut chart segment element %#", (i) => {
         let rootTransformElement: Element | null;
         let torusElement: Element | null;
         let materialElement: Element | null;
 
         beforeAll(() => {
-            groupElement = groupElements[i];
-            rootTransformElement = groupElement.querySelector("transform");
-            torusElement = groupElement.querySelector("transform > shape > torus");
-            materialElement = groupElement.querySelector("transform > shape > appearance > material");
+            rootTransformElement = donutChartElement && donutChartElement.querySelector(`transform:nth-child(${i + 1})`);
+            torusElement = donutChartElement && donutChartElement.querySelector(`transform:nth-child(${i + 1}) > shape > torus`);
+            materialElement = donutChartElement && donutChartElement.querySelector(`transform:nth-child(${i + 1}) > shape > appearance > material`);
         });
 
         it("should have a root transform element rotated about the z-axis to the start of the donut segment", () => {

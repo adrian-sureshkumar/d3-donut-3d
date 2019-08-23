@@ -101,28 +101,35 @@ function renderScene<GElement extends BaseType, PElement extends BaseType, PDatu
     s.selectAll("scene")
     .data(d => [d])
     .join("scene")
-    .call(s =>
-        s.selectAll("group")
-        .data(d => d)
-        .join("group")
-        .call(renderDonutSegment)
-    );
+    .call(renderDonutChart);
 }
 
-function renderDonutSegment<GElement extends BaseType, PElement extends BaseType, PDatum>(
-    s: Selection<GElement, DonutSegment, PElement, PDatum>
+function renderDonutChart<GElement extends BaseType, PElement extends BaseType, PDatum>(
+    s: Selection<GElement, DonutSegment[], PElement, PDatum>
 ): void {
-    s.selectAll("transform")
+    s.selectAll("group.donut-chart")
     .data(d => [d])
+    .join("group")
+      .attr("class", "donut-chart")
+    .call(renderDonutChartSegments);
+}
+
+function renderDonutChartSegments<GElement extends BaseType, PElement extends BaseType, PDatum>(
+    s: Selection<GElement, DonutSegment[], PElement, PDatum>
+): void {
+    s.selectAll("transform.donut-chart-segment")
+    .data(d => d)
     .join("transform")
+      .attr("class", "donut-chart-segment")
     .call(s =>
         s.transition()
           .attr("rotation", d => `0 0 1 ${(Math.PI / 2) - d.start}`)
     )
     .call(s =>
-        s.selectAll("shape")
+        s.selectAll("shape.donut-chart-segment-torus")
         .data(d => [d])
         .join("shape")
+          .attr("class", "donut-chart-segment-torus")
         .call(s =>
             s.selectAll("torus")
             .data(d => [d])
@@ -144,24 +151,25 @@ function renderDonutSegment<GElement extends BaseType, PElement extends BaseType
             )
         )
     )
-    .call(renderDonutSegmentLabels);
+    .call(renderDonutChartSegmentLabels);
 }
 
-function renderDonutSegmentLabels<GElement extends BaseType, PElement extends BaseType, PDatum>(
+function renderDonutChartSegmentLabels<GElement extends BaseType, PElement extends BaseType, PDatum>(
     s: Selection<GElement, DonutSegment, PElement, PDatum>
 ): void {
     const labelOffset = 2.5;
-    s.selectAll("transform")
+    s.selectAll("transform.donut-chart-segment-label")
     .data(d => d.label ? [d] : [])
     .join("transform")
+      .attr("class", "donut-chart-segment-label")
       .attr("translation", `${labelOffset} 0 0`)
       .attr("center", `${-labelOffset} 0 0`)
       .attr("rotation", d => `0 0 1 ${-d.length / 2}`)
     .call(s =>
-        s.selectAll("shape.label-line")
+        s.selectAll("shape.donut-chart-segment-label-line")
         .data(d => [d])
         .join("shape")
-          .attr("class", "label-line")
+          .attr("class", "donut-chart-segment-label-line")
         .call(s =>
             s.selectAll("lineset")
             .data(d => [d])
@@ -176,10 +184,10 @@ function renderDonutSegmentLabels<GElement extends BaseType, PElement extends Ba
         )
     )
     .call(s =>
-        s.selectAll("shape.label-text")
+        s.selectAll("shape.donut-chart-segment-label-text")
         .data(d => [d])
         .join("shape")
-          .attr("class", "label-text")
+          .attr("class", "donut-chart-segment-label-text")
         .call(s =>
             s.selectAll("appearance")
             .data(d => [d])
