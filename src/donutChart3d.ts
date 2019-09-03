@@ -1,6 +1,6 @@
 import { Selection, BaseType, rgb, RGBColor, HSLColor } from "d3";
 
-import { FluentD3GetSet, makeFluentD3GetSet } from "./fluentD3GetSet";
+import { FluentD3GetSet, makeFluentD3GetSet } from "./d3-utils/fluentD3GetSet";
 
 interface Render<GElement extends BaseType, Datum, PElement extends BaseType, PDatum> {
     (selection: Selection<GElement, Datum, PElement, PDatum>): void;
