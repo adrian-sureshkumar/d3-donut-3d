@@ -1,39 +1,36 @@
 import { Selection, BaseType, rgb, RGBColor, HSLColor } from "d3";
 
-import { FluentD3GetSet, makeFluentD3GetSet } from "./d3-utils/fluentD3GetSet";
+import { FluentD3GetSet, makeFluentD3GetSet } from "./d3-utils/FluentD3GetSet";
+import { RenderFn } from "./d3-utils/RenderFn";
 
-interface Render<GElement extends BaseType, Datum, PElement extends BaseType, PDatum> {
-    (selection: Selection<GElement, Datum, PElement, PDatum>): void;
-}
-
-export interface Donut3DDatum {
+export interface DonutChart3dDatum {
     color: string | RGBColor | HSLColor;
     name?: string;
     value: number;
 }
 
-export interface Donut3DLabelFormatter {
+export interface DonutChart3dLabelFormatter {
     (name: string, value: number, percentage: number): string;
 }
 
-export interface RenderDonutChart3D<GElement extends BaseType, Datum, PElement extends BaseType, PDatum>
-    extends Render<GElement, Datum, PElement, PDatum> {
-    data: FluentD3GetSet<this, Donut3DDatum[]>;
+export interface DonutChart3dRenderFn<GElement extends BaseType, Datum, PElement extends BaseType, PDatum>
+    extends RenderFn<GElement, Datum, PElement, PDatum> {
+    data: FluentD3GetSet<this, DonutChart3dDatum[]>;
     height: FluentD3GetSet<this, string | null>;
-    labelFormat: FluentD3GetSet<this, Donut3DLabelFormatter | null>;
+    labelFormat: FluentD3GetSet<this, DonutChart3dLabelFormatter | null>;
     width: FluentD3GetSet<this, string | null>;
 }
 
 export function donutChart3d<GElement extends BaseType, Datum, PElement extends BaseType, PDatum>(
-): RenderDonutChart3D<GElement, Datum, PElement, PDatum> {
-    let data: Donut3DDatum[] = [];
+): DonutChart3dRenderFn<GElement, Datum, PElement, PDatum> {
+    let data: DonutChart3dDatum[] = [];
     let height: string | null = null;
-    let labelFormat: Donut3DLabelFormatter | null = null;
+    let labelFormat: DonutChart3dLabelFormatter | null = null;
     let width: string | null = null;
 
-    const render: RenderDonutChart3D<GElement, Datum, PElement, PDatum> = (s) => {
+    const render: DonutChart3dRenderFn<GElement, Datum, PElement, PDatum> = (s) => {
         const donutSegments = getDonutSegments(data, labelFormat);
-        renderX3D(s, donutSegments, height, width);
+        renderX3d(s, donutSegments, height, width);
     }
 
     render.data = makeFluentD3GetSet(render, () => data, value => data = value);
@@ -51,7 +48,7 @@ interface DonutSegment {
     start: number;
 }
 
-function getDonutSegments(data: Donut3DDatum[], labelFormat: Donut3DLabelFormatter | null): DonutSegment[] {
+function getDonutSegments(data: DonutChart3dDatum[], labelFormat: DonutChart3dLabelFormatter | null): DonutSegment[] {
     const donutSegments: DonutSegment[] = [];
 
     if (data.length) {
@@ -81,7 +78,7 @@ function getDonutSegments(data: Donut3DDatum[], labelFormat: Donut3DLabelFormatt
     return donutSegments;
 }
 
-function renderX3D<GElement extends BaseType, Datum, PElement extends BaseType, PDatum>(
+function renderX3d<GElement extends BaseType, Datum, PElement extends BaseType, PDatum>(
     s: Selection<GElement, Datum, PElement, PDatum>,
     donutSegments: DonutSegment[],
     height: string | null,

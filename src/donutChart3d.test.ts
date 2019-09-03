@@ -1,9 +1,9 @@
 import { select, BaseType, rgb, timerFlush } from "d3";
 import faker from "faker";
 
-import { donutChart3d, RenderDonutChart3D, Donut3DDatum, Donut3DLabelFormatter } from "./donutChart3d";
+import { donutChart3d, DonutChart3dRenderFn, DonutChart3dDatum, DonutChart3dLabelFormatter } from "./donutChart3d";
 
-const data: Donut3DDatum[] = [{
+const data: DonutChart3dDatum[] = [{
     color: "red",
     value: 1
 }, {
@@ -14,13 +14,13 @@ const data: Donut3DDatum[] = [{
     value: 3
 }];
 
-const labelFormat: Donut3DLabelFormatter = (name, value, percentage) => `${name}: ${value} (${percentage})`;
+const labelFormat: DonutChart3dLabelFormatter = (name, value, percentage) => `${name}: ${value} (${percentage})`;
 
 const height = `${faker.random.number()}px`;
 const width = `${faker.random.number()}px`;
 
 describe("property getters/setters", () => {
-    let chart: RenderDonutChart3D<BaseType, null, BaseType, null>;
+    let chart: DonutChart3dRenderFn<BaseType, null, BaseType, null>;
 
     beforeEach(() => {
         chart = donutChart3d();
@@ -66,7 +66,7 @@ describe("when the chart is rendered", () => {
     let x3dElement: HTMLElement | null;
     let sceneElement: HTMLElement | null;
     let donutChartElement: HTMLElement | null;
-    let chart: RenderDonutChart3D<HTMLDivElement, null, null, undefined>;
+    let chart: DonutChart3dRenderFn<HTMLDivElement, null, null, undefined>;
 
     beforeAll(() => {
         root = document.createElement("div")
