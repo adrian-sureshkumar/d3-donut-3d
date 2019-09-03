@@ -65,7 +65,7 @@ describe("when the chart is rendered", () => {
     let root: HTMLDivElement;
     let x3dElement: HTMLElement | null;
     let sceneElement: HTMLElement | null;
-    let donutChartElement: HTMLElement | null;
+    let chartElement: HTMLElement | null;
     let chart: DonutChart3dRenderFn<HTMLDivElement, null, null, undefined>;
 
     beforeAll(() => {
@@ -82,7 +82,7 @@ describe("when the chart is rendered", () => {
 
         x3dElement = root.querySelector("x3d");
         sceneElement = root.querySelector("x3d > scene");
-        donutChartElement = root.querySelector("x3d > scene > .donut-chart");
+        chartElement = root.querySelector("x3d > scene > .chart");
     });
 
     afterAll(() => {
@@ -105,27 +105,27 @@ describe("when the chart is rendered", () => {
         expect(sceneElement).not.toBeNull();
     })
 
-    it("should create a root element for the donut chart", () => {
-        expect(donutChartElement).not.toBeNull();
+    it("should create a root element for the chart", () => {
+        expect(chartElement).not.toBeNull();
     })
 
-    it("should create an element representing each donut chart segment", () => {
-        expect(donutChartElement && donutChartElement.childNodes).toHaveLength(data.length);
+    it("should create an element representing each chart segment", () => {
+        expect(chartElement && chartElement.childNodes).toHaveLength(data.length);
     })
 
     describe.each(data.map((_, i) => (i)))
-    ("donut chart segment element %#", (i) => {
+    ("chart segment element %#", (i) => {
         let rootTransformElement: HTMLElement | null;
         let torusElement: HTMLElement | null;
         let materialElement: HTMLElement | null;
 
         beforeAll(() => {
-            rootTransformElement = donutChartElement && donutChartElement.querySelector(`transform:nth-child(${i + 1})`);
-            torusElement = donutChartElement && donutChartElement.querySelector(`transform:nth-child(${i + 1}) > shape > torus`);
-            materialElement = donutChartElement && donutChartElement.querySelector(`transform:nth-child(${i + 1}) > shape > appearance > material`);
+            rootTransformElement = chartElement && chartElement.querySelector(`transform:nth-child(${i + 1})`);
+            torusElement = chartElement && chartElement.querySelector(`transform:nth-child(${i + 1}) > shape > torus`);
+            materialElement = chartElement && chartElement.querySelector(`transform:nth-child(${i + 1}) > shape > appearance > material`);
         });
 
-        it("should have a root transform element rotated about the z-axis to the start of the donut segment", () => {
+        it("should have a root transform element rotated about the z-axis to the start of the segment", () => {
             expect(rootTransformElement).not.toBeNull();
 
             const angle = (1/4 - (i === 0 ? 0 : i === 1 ? 1/6 : 1/2)) * (2 * Math.PI);
@@ -137,7 +137,7 @@ describe("when the chart is rendered", () => {
             expect(rotationAttributeValues && rotationAttributeValues[3]).toBeCloseTo(angle, 9);
         });
 
-        it("should have a torus element with the angle set to the donut segment size", () => {
+        it("should have a torus element with the angle set to the segment size", () => {
             expect(torusElement).not.toBeNull();
 
             const angle = ((i + 1) / 6) * (2 * Math.PI);
@@ -145,7 +145,7 @@ describe("when the chart is rendered", () => {
             expect(angleAttribute && Number(angleAttribute.value)).toBeCloseTo(angle, 9);
         });
 
-        it("should have a material element representing the color of the donut segment", () => {
+        it("should have a material element representing the color of the segment", () => {
             expect(materialElement).not.toBeNull();
 
             const red = i === 0 ? 1 : 0;

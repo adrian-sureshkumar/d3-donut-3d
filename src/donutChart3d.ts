@@ -29,8 +29,8 @@ export function donutChart3d<GElement extends BaseType, Datum, PElement extends 
     let width: string | null = null;
 
     const renderFn: DonutChart3dRenderFn<GElement, Datum, PElement, PDatum> = (s) => {
-        const donutSegments = getDonutSegments(data, labelFormat);
-        renderX3d(s, donutSegments, height, width);
+        const chartSegments = getChartSegments(data, labelFormat);
+        renderX3d(s, chartSegments, height, width);
     }
 
     renderFn.data = makeFluentD3GetSet(renderFn, () => data, value => data = value);
@@ -41,15 +41,15 @@ export function donutChart3d<GElement extends BaseType, Datum, PElement extends 
     return renderFn;
 }
 
-interface DonutSegment {
+interface ChartSegment {
     color: RGBColor;
     label: string;
     length: number;
     start: number;
 }
 
-function getDonutSegments(data: DonutChart3dDatum[], labelFormat: DonutChart3dLabelFormatter | null): DonutSegment[] {
-    const donutSegments: DonutSegment[] = [];
+function getChartSegments(data: DonutChart3dDatum[], labelFormat: DonutChart3dLabelFormatter | null): ChartSegment[] {
+    const chartSegments: ChartSegment[] = [];
 
     if (data.length) {
         const cumulativeValues = [0];
@@ -71,21 +71,21 @@ function getDonutSegments(data: DonutChart3dDatum[], labelFormat: DonutChart3dLa
 
             const label = labelFormat ? labelFormat(datum.name || "", datum.value, datum.value / totalValue * 100) : "";
 
-            donutSegments.push({ color, length, label, start });
+            chartSegments.push({ color, length, label, start });
         }
     }
 
-    return donutSegments;
+    return chartSegments;
 }
 
 function renderX3d<GElement extends BaseType, Datum, PElement extends BaseType, PDatum>(
     s: Selection<GElement, Datum, PElement, PDatum>,
-    donutSegments: DonutSegment[],
+    chartSegments: ChartSegment[],
     height: string | null,
     width: string | null
 ): void {
     s.selectAll("x3d")
-    .data([donutSegments])
+    .data([chartSegments])
     .join("x3d")
       .style("height", () => height)
       .style("width", () => width)
@@ -93,40 +93,40 @@ function renderX3d<GElement extends BaseType, Datum, PElement extends BaseType, 
 }
 
 function renderScene<GElement extends BaseType, PElement extends BaseType, PDatum>(
-    s: Selection<GElement, DonutSegment[], PElement, PDatum>
+    s: Selection<GElement, ChartSegment[], PElement, PDatum>
 ): void {
     s.selectAll("scene")
     .data(d => [d])
     .join("scene")
-    .call(renderDonutChart);
+    .call(renderChart);
 }
 
-function renderDonutChart<GElement extends BaseType, PElement extends BaseType, PDatum>(
-    s: Selection<GElement, DonutSegment[], PElement, PDatum>
+function renderChart<GElement extends BaseType, PElement extends BaseType, PDatum>(
+    s: Selection<GElement, ChartSegment[], PElement, PDatum>
 ): void {
-    s.selectAll("group.donut-chart")
+    s.selectAll("group.chart")
     .data(d => [d])
     .join("group")
-      .attr("class", "donut-chart")
-    .call(renderDonutChartSegments);
+      .attr("class", "chart")
+    .call(renderChartSegments);
 }
 
-function renderDonutChartSegments<GElement extends BaseType, PElement extends BaseType, PDatum>(
-    s: Selection<GElement, DonutSegment[], PElement, PDatum>
+function renderChartSegments<GElement extends BaseType, PElement extends BaseType, PDatum>(
+    s: Selection<GElement, ChartSegment[], PElement, PDatum>
 ): void {
-    s.selectAll("transform.donut-chart-segment")
+    s.selectAll("transform.chart-segment")
     .data(d => d)
     .join("transform")
-      .attr("class", "donut-chart-segment")
+      .attr("class", "chart-segment")
     .call(s =>
         s.transition()
           .attr("rotation", d => `0 0 1 ${(Math.PI / 2) - d.start}`)
     )
     .call(s =>
-        s.selectAll("shape.donut-chart-segment-torus")
+        s.selectAll("shape.chart-segment-torus")
         .data(d => [d])
         .join("shape")
-          .attr("class", "donut-chart-segment-torus")
+          .attr("class", "chart-segment-torus")
         .call(s =>
             s.selectAll("torus")
             .data(d => [d])
@@ -148,25 +148,25 @@ function renderDonutChartSegments<GElement extends BaseType, PElement extends Ba
             )
         )
     )
-    .call(renderDonutChartSegmentLabels);
+    .call(renderChartSegmentLabels);
 }
 
-function renderDonutChartSegmentLabels<GElement extends BaseType, PElement extends BaseType, PDatum>(
-    s: Selection<GElement, DonutSegment, PElement, PDatum>
+function renderChartSegmentLabels<GElement extends BaseType, PElement extends BaseType, PDatum>(
+    s: Selection<GElement, ChartSegment, PElement, PDatum>
 ): void {
     const labelOffset = 2.5;
-    s.selectAll("transform.donut-chart-segment-label")
+    s.selectAll("transform.chart-segment-label")
     .data(d => d.label ? [d] : [])
     .join("transform")
-      .attr("class", "donut-chart-segment-label")
+      .attr("class", "chart-segment-label")
       .attr("translation", `${labelOffset} 0 0`)
       .attr("center", `${-labelOffset} 0 0`)
       .attr("rotation", d => `0 0 1 ${-d.length / 2}`)
     .call(s =>
-        s.selectAll("shape.donut-chart-segment-label-line")
+        s.selectAll("shape.chart-segment-label-line")
         .data(d => [d])
         .join("shape")
-          .attr("class", "donut-chart-segment-label-line")
+          .attr("class", "chart-segment-label-line")
         .call(s =>
             s.selectAll("lineset")
             .data(d => [d])
@@ -181,10 +181,10 @@ function renderDonutChartSegmentLabels<GElement extends BaseType, PElement exten
         )
     )
     .call(s =>
-        s.selectAll("shape.donut-chart-segment-label-text")
+        s.selectAll("shape.chart-segment-label-text")
         .data(d => [d])
         .join("shape")
-          .attr("class", "donut-chart-segment-label-text")
+          .attr("class", "chart-segment-label-text")
         .call(s =>
             s.selectAll("appearance")
             .data(d => [d])
