@@ -53,14 +53,14 @@ function getChartSegments(data: DonutChart3dDatum[], labelFormat: DonutChart3dLa
 
     if (data.length) {
         const cumulativeValues = [0];
-        data.forEach(datum => cumulativeValues.push(cumulativeValues[cumulativeValues.length - 1] + datum.value));
+        data.forEach((datum, i) => cumulativeValues.push(cumulativeValues[i] + datum.value));
 
-        const totalValue = cumulativeValues[cumulativeValues.length - 1];
+        const total = cumulativeValues[cumulativeValues.length - 1];
 
-        const valueToAngleRatio = 2 * Math.PI / totalValue;
+        const valueToAngleRatio = 2 * Math.PI / total;
 
-        for (let i = 0; i < data.length; i++) {
-            const datum = data[i];
+        data.forEach((datum, i) => {
+            const percentage = datum.value / total * 100;
 
             const start = cumulativeValues[i] * valueToAngleRatio;
             const length = datum.value * valueToAngleRatio;
@@ -69,10 +69,12 @@ function getChartSegments(data: DonutChart3dDatum[], labelFormat: DonutChart3dLa
                 ? rgb(datum.color)
                 : datum.color.rgb();
 
-            const label = labelFormat ? labelFormat(datum.name || "", datum.value, datum.value / totalValue * 100) : "";
+            const label = labelFormat
+                ? labelFormat(datum.name || "", datum.value, percentage)
+                : "";
 
-            chartSegments.push({ color, length, label, start });
-        }
+            chartSegments.push({ start, length, color, label });
+        });
     }
 
     return chartSegments;
