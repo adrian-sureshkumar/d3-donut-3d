@@ -1,12 +1,11 @@
 const d3 = require("d3");
-const faker = require("faker");
 const { donutChart3d } = require("../lib");
 
 const colorScale = d3.scaleOrdinal(d3.schemeCategory10);
 
 const data = Array(10).fill(null).map((_, i) => ({
     color: colorScale(i),
-    name: faker.commerce.product(),
+    name: String.fromCharCode("A".charCodeAt() + i),
     value: 1
 }));
 
@@ -24,4 +23,4 @@ function render() {
 }
 
 render();
-d3.interval(render, 2000);
+d3.interval(render, 3000);
