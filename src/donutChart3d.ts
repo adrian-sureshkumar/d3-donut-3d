@@ -29,8 +29,8 @@ export function donutChart3d<GElement extends BaseType, Datum, PElement extends 
     let width: string | null = null;
 
     const renderFn: DonutChart3dRenderFn<GElement, Datum, PElement, PDatum> = (s) => {
-        const chartSegments = getChartSegments(data, labelFormat);
-        renderX3d(s, chartSegments, height, width);
+        const chartSeries = getChartSeries(data, labelFormat);
+        renderX3d(s, chartSeries, height, width);
     }
 
     renderFn.data = makeFluentD3GetSet(renderFn, () => data, value => data = value);
@@ -41,15 +41,15 @@ export function donutChart3d<GElement extends BaseType, Datum, PElement extends 
     return renderFn;
 }
 
-interface ChartSegment {
+interface ChartSeries {
     color: RGBColor;
     label: string;
-    length: number;
-    start: number;
+    sliceLength: number;
+    sliceStart: number;
 }
 
-function getChartSegments(data: DonutChart3dDatum[], labelFormat: DonutChart3dLabelFormatter | null): ChartSegment[] {
-    const chartSegments: ChartSegment[] = [];
+function getChartSeries(data: DonutChart3dDatum[], labelFormat: DonutChart3dLabelFormatter | null): ChartSeries[] {
+    const chartSeries: ChartSeries[] = [];
 
     if (data.length) {
         const cumulativeValues = [0];
@@ -62,8 +62,8 @@ function getChartSegments(data: DonutChart3dDatum[], labelFormat: DonutChart3dLa
         data.forEach((datum, i) => {
             const percentage = datum.value / total * 100;
 
-            const start = cumulativeValues[i] * valueToAngleRatio;
-            const length = datum.value * valueToAngleRatio;
+            const sliceStart = cumulativeValues[i] * valueToAngleRatio;
+            const sliceLength = datum.value * valueToAngleRatio;
 
             const color = typeof datum.color === "string"
                 ? rgb(datum.color)
@@ -73,21 +73,21 @@ function getChartSegments(data: DonutChart3dDatum[], labelFormat: DonutChart3dLa
                 ? labelFormat(datum.name || "", datum.value, percentage)
                 : "";
 
-            chartSegments.push({ start, length, color, label });
+            chartSeries.push({ sliceStart, sliceLength, color, label });
         });
     }
 
-    return chartSegments;
+    return chartSeries;
 }
 
 function renderX3d<GElement extends BaseType, Datum, PElement extends BaseType, PDatum>(
     s: Selection<GElement, Datum, PElement, PDatum>,
-    chartSegments: ChartSegment[],
+    chartSeries: ChartSeries[],
     height: string | null,
     width: string | null
 ): void {
     s.selectAll("x3d")
-    .data([chartSegments])
+    .data([chartSeries])
     .join("x3d")
       .style("height", () => height)
       .style("width", () => width)
@@ -95,7 +95,7 @@ function renderX3d<GElement extends BaseType, Datum, PElement extends BaseType, 
 }
 
 function renderScene<GElement extends BaseType, PElement extends BaseType, PDatum>(
-    s: Selection<GElement, ChartSegment[], PElement, PDatum>
+    s: Selection<GElement, ChartSeries[], PElement, PDatum>
 ): void {
     s.selectAll("scene")
     .data(d => [d])
@@ -104,71 +104,75 @@ function renderScene<GElement extends BaseType, PElement extends BaseType, PDatu
 }
 
 function renderChart<GElement extends BaseType, PElement extends BaseType, PDatum>(
-    s: Selection<GElement, ChartSegment[], PElement, PDatum>
+    s: Selection<GElement, ChartSeries[], PElement, PDatum>
 ): void {
     s.selectAll("group.chart")
     .data(d => [d])
     .join("group")
       .attr("class", "chart")
-    .call(renderChartSegments);
+    .call(renderChartSeries);
 }
 
-function renderChartSegments<GElement extends BaseType, PElement extends BaseType, PDatum>(
-    s: Selection<GElement, ChartSegment[], PElement, PDatum>
+function renderChartSeries<GElement extends BaseType, PElement extends BaseType, PDatum>(
+    s: Selection<GElement, ChartSeries[], PElement, PDatum>
 ): void {
-    s.selectAll("transform.chart-segment")
+    s.selectAll("transform.chart-series")
     .data(d => d)
     .join("transform")
-      .attr("class", "chart-segment")
+      .attr("class", "chart-series")
     .call(s =>
         s.transition()
-          .attr("rotation", d => `0 0 1 ${(Math.PI / 2) - d.start}`)
+          .attr("rotation", d => `0 0 1 ${(Math.PI / 2) - d.sliceStart}`)
     )
-    .call(s =>
-        s.selectAll("shape.chart-segment-torus")
-        .data(d => [d])
-        .join("shape")
-          .attr("class", "chart-segment-torus")
-        .call(s =>
-            s.selectAll("torus")
-            .data(d => [d])
-            .join("torus")
-              .attr("useGeoCache", false)
-            .transition()
-              .attr("angle", d => `${d.length}`)
-        )
-        .call(s =>
-            s.selectAll("appearance")
-            .data(d => [d])
-            .join("appearance")
-            .call(s =>
-                s.selectAll("material")
-                .data(d => [d])
-                .join("material")
-                  .attr("diffuseColor", d => `${d.color.r / 255} ${d.color.g / 255} ${d.color.b / 255}`)
-                  .attr("transparency", d => `${1 - d.color.opacity}`)
-            )
-        )
-    )
-    .call(renderChartSegmentLabels);
+    .call(renderChartSeriesSlices)
+    .call(renderChartSeriesLabels);
 }
 
-function renderChartSegmentLabels<GElement extends BaseType, PElement extends BaseType, PDatum>(
-    s: Selection<GElement, ChartSegment, PElement, PDatum>
+function renderChartSeriesSlices<GElement extends BaseType, PElement extends BaseType, PDatum>(
+    s: Selection<GElement, ChartSeries, PElement, PDatum>
+): void {
+    s.selectAll("shape.chart-series-slice")
+    .data(d => [d])
+    .join("shape")
+      .attr("class", "chart-series-slice")
+    .call(s =>
+        s.selectAll("torus")
+        .data(d => [d])
+        .join("torus")
+          .attr("useGeoCache", false)
+        .transition()
+          .attr("angle", d => `${d.sliceLength}`)
+    )
+    .call(s =>
+        s.selectAll("appearance")
+        .data(d => [d])
+        .join("appearance")
+        .call(s =>
+            s.selectAll("material")
+            .data(d => [d])
+            .join("material")
+              .attr("diffuseColor", d => `${d.color.r / 255} ${d.color.g / 255} ${d.color.b / 255}`)
+              .attr("transparency", d => `${1 - d.color.opacity}`)
+        )
+    );
+}
+
+function renderChartSeriesLabels<GElement extends BaseType, PElement extends BaseType, PDatum>(
+    s: Selection<GElement, ChartSeries, PElement, PDatum>
 ): void {
     const labelOffset = 2.5;
-    s.selectAll("transform.chart-segment-label")
+    s.selectAll("transform.chart-series-label")
     .data(d => d.label ? [d] : [])
     .join("transform")
-      .attr("class", "chart-segment-label")
+      .attr("class", "chart-series-label")
       .attr("translation", `${labelOffset} 0 0`)
       .attr("center", `${-labelOffset} 0 0`)
-      .attr("rotation", d => `0 0 1 ${-d.length / 2}`)
+      .attr("rotation", d => `0 0 1 ${-d.sliceLength / 2}`)
     .call(s =>
-        s.selectAll("shape.chart-segment-label-line")
+        s.selectAll("shape.chart-series-label-line")
         .data(d => [d])
         .join("shape")
-          .attr("class", "chart-segment-label-line")
+          .attr("class", "chart-series-label-line")
         .call(s =>
             s.selectAll("lineset")
             .data(d => [d])
@@ -183,10 +187,10 @@ function renderChartSegmentLabels<GElement extends BaseType, PElement extends Ba
         )
     )
     .call(s =>
-        s.selectAll("shape.chart-segment-label-text")
+        s.selectAll("shape.chart-series-label-text")
         .data(d => [d])
         .join("shape")
-          .attr("class", "chart-segment-label-text")
+          .attr("class", "chart-series-label-text")
         .call(s =>
             s.selectAll("appearance")
             .data(d => [d])

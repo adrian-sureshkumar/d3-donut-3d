@@ -81,8 +81,8 @@ describe("when the chart is rendered", () => {
         timerFlush();
 
         x3dElement = root.querySelector("x3d");
-        sceneElement = root.querySelector("x3d > scene");
-        chartElement = root.querySelector("x3d > scene > .chart");
+        sceneElement = x3dElement && x3dElement.querySelector("scene");
+        chartElement = sceneElement && sceneElement.querySelector(".chart");
     });
 
     afterAll(() => {
@@ -109,23 +109,23 @@ describe("when the chart is rendered", () => {
         expect(chartElement).not.toBeNull();
     })
 
-    it("should create an element representing each chart segment", () => {
+    it("should create an element representing each series", () => {
         expect(chartElement && chartElement.childNodes).toHaveLength(data.length);
     })
 
     describe.each(data.map((_, i) => (i)))
-    ("chart segment element %#", (i) => {
+    ("series element %#", (i) => {
         let rootTransformElement: HTMLElement | null;
         let torusElement: HTMLElement | null;
         let materialElement: HTMLElement | null;
 
         beforeAll(() => {
             rootTransformElement = chartElement && chartElement.querySelector(`transform:nth-child(${i + 1})`);
-            torusElement = chartElement && chartElement.querySelector(`transform:nth-child(${i + 1}) > shape > torus`);
-            materialElement = chartElement && chartElement.querySelector(`transform:nth-child(${i + 1}) > shape > appearance > material`);
+            torusElement = rootTransformElement && rootTransformElement.querySelector("shape > torus");
+            materialElement = rootTransformElement && rootTransformElement.querySelector("shape > appearance > material");
         });
 
-        it("should have a root transform element rotated about the z-axis to the start of the segment", () => {
+        it("should have a root transform element rotated about the z-axis to the start of the slice", () => {
             expect(rootTransformElement).not.toBeNull();
 
             const angle = (1/4 - (i === 0 ? 0 : i === 1 ? 1/6 : 1/2)) * (2 * Math.PI);
@@ -137,7 +137,7 @@ describe("when the chart is rendered", () => {
             expect(rotationAttributeValues && rotationAttributeValues[3]).toBeCloseTo(angle, 9);
         });
 
-        it("should have a torus element with the angle set to the segment size", () => {
+        it("should have a torus element with the angle set to the slice length", () => {
             expect(torusElement).not.toBeNull();
 
             const angle = ((i + 1) / 6) * (2 * Math.PI);
@@ -145,7 +145,7 @@ describe("when the chart is rendered", () => {
             expect(angleAttribute && Number(angleAttribute.value)).toBeCloseTo(angle, 9);
         });
 
-        it("should have a material element representing the color of the segment", () => {
+        it("should have a material element representing the color of the series", () => {
             expect(materialElement).not.toBeNull();
 
             const red = i === 0 ? 1 : 0;
