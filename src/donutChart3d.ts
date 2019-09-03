@@ -28,17 +28,17 @@ export function donutChart3d<GElement extends BaseType, Datum, PElement extends 
     let labelFormat: DonutChart3dLabelFormatter | null = null;
     let width: string | null = null;
 
-    const render: DonutChart3dRenderFn<GElement, Datum, PElement, PDatum> = (s) => {
+    const renderFn: DonutChart3dRenderFn<GElement, Datum, PElement, PDatum> = (s) => {
         const donutSegments = getDonutSegments(data, labelFormat);
         renderX3d(s, donutSegments, height, width);
     }
 
-    render.data = makeFluentD3GetSet(render, () => data, value => data = value);
-    render.height = makeFluentD3GetSet(render, () => height, value => height = value);
-    render.labelFormat = makeFluentD3GetSet(render, () => labelFormat, value => labelFormat = value);
-    render.width = makeFluentD3GetSet(render, () => width, value => width = value);
+    renderFn.data = makeFluentD3GetSet(renderFn, () => data, value => data = value);
+    renderFn.height = makeFluentD3GetSet(renderFn, () => height, value => height = value);
+    renderFn.labelFormat = makeFluentD3GetSet(renderFn, () => labelFormat, value => labelFormat = value);
+    renderFn.width = makeFluentD3GetSet(renderFn, () => width, value => width = value);
 
-    return render;
+    return renderFn;
 }
 
 interface DonutSegment {
