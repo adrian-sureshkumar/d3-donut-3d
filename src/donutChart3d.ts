@@ -41,6 +41,8 @@ export function donutChart3d<GElement extends BaseType, Datum, PElement extends 
     return renderFn;
 }
 
+const transitionDuration = 500;
+
 interface ChartSeries {
     color: RGBColor;
     label: string;
@@ -122,6 +124,7 @@ function renderChartSeries<GElement extends BaseType, PElement extends BaseType,
       .attr("class", "chart-series")
     .call(s =>
         s.transition()
+          .duration(transitionDuration)
           .attr("rotation", d => `0 0 1 ${(Math.PI / 2) - d.sliceStart}`)
     )
     .call(renderChartSeriesSlices)
@@ -141,6 +144,7 @@ function renderChartSeriesSlices<GElement extends BaseType, PElement extends Bas
         .join("torus")
           .attr("useGeoCache", false)
         .transition()
+          .duration(transitionDuration)
           .attr("angle", d => `${d.sliceLength}`)
     )
     .call(s =>
