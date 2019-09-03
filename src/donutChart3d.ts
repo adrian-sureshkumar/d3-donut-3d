@@ -168,54 +168,62 @@ function renderChartSeriesLabels<GElement extends BaseType, PElement extends Bas
       .attr("translation", `${labelOffset} 0 0`)
       .attr("center", `${-labelOffset} 0 0`)
       .attr("rotation", d => `0 0 1 ${-d.sliceLength / 2}`)
+    .call(renderChartSeriesLabelLines)
+    .call(renderChartSeriesLabelText);
+}
+
+function renderChartSeriesLabelLines<GElement extends BaseType, PElement extends BaseType, PDatum>(
+    s: Selection<GElement, ChartSeries, PElement, PDatum>
+): void {
+    s.selectAll("shape.chart-series-label-line")
+    .data(d => [d])
+    .join("shape")
+      .attr("class", "chart-series-label-line")
     .call(s =>
-        s.selectAll("shape.chart-series-label-line")
+        s.selectAll("lineset")
         .data(d => [d])
-        .join("shape")
-          .attr("class", "chart-series-label-line")
+        .join("lineset")
+          .attr("vertexCount", "2")
         .call(s =>
-            s.selectAll("lineset")
+            s.selectAll("coordinate")
             .data(d => [d])
-            .join("lineset")
-              .attr("vertexCount", "2")
-            .call(s =>
-                s.selectAll("coordinate")
-                .data(d => [d])
-                .join("coordinate")
-                  .attr("point", "-0.1 0 0 -1 0 0")
-            )
+            .join("coordinate")
+              .attr("point", "-0.1 0 0 -1 0 0")
+        )
+    );
+}
+
+function renderChartSeriesLabelText<GElement extends BaseType, PElement extends BaseType, PDatum>(
+    s: Selection<GElement, ChartSeries, PElement, PDatum>
+): void {
+    s.selectAll("shape.chart-series-label-text")
+    .data(d => [d])
+    .join("shape")
+      .attr("class", "chart-series-label-text")
+    .call(s =>
+        s.selectAll("text")
+        .data(d => [d])
+        .join("text")
+          .attr("string", d => d.label)
+          .attr("solid", false)
+        .call(s =>
+            s.selectAll("fontstyle")
+            .data(d => [d])
+            .join("fontstyle")
+              .attr("family", "sans-serif")
+              .attr("justify", '"begin" "middle"')
+              .attr("size", "0.25")
         )
     )
     .call(s =>
-        s.selectAll("shape.chart-series-label-text")
+        s.selectAll("appearance")
         .data(d => [d])
-        .join("shape")
-          .attr("class", "chart-series-label-text")
+        .join("appearance")
         .call(s =>
-            s.selectAll("appearance")
+            s.selectAll("material")
             .data(d => [d])
-            .join("appearance")
-            .call(s =>
-                s.selectAll("material")
-                .data(d => [d])
-                .join("material")
-                  .attr("diffuseColor", "0 0 0")
-            )
+            .join("material")
+              .attr("diffuseColor", "0 0 0")
         )
-        .call(s =>
-            s.selectAll("text")
-            .data(d => [d])
-            .join("text")
-              .attr("string", d => d.label)
-              .attr("solid", false)
-            .call(s =>
-                s.selectAll("fontstyle")
-                .data(d => [d])
-                .join("fontstyle")
-                  .attr("family", "sans-serif")
-                  .attr("justify", '"begin" "middle"')
-                  .attr("size", "0.25")
-            )
-        )
-    )
+    );
 }
