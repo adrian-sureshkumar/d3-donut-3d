@@ -29,7 +29,7 @@ const majorRadius = 1;
 const outerRadius = majorRadius + minorRadius;
 const innerRadius = majorRadius - minorRadius;
 
-const labelOffset = 1;
+const labelOffset = 1.5;
 
 export function donutChart3d<GElement extends BaseType, Datum, PElement extends BaseType, PDatum>(
 ): DonutChart3dRenderFn<GElement, Datum, PElement, PDatum> {
