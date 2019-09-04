@@ -1,5 +1,6 @@
-import { select, BaseType, rgb, timerFlush } from "d3";
-import faker from "faker";
+import * as d3 from "d3";
+import { BaseType } from "d3";
+import * as faker from "faker";
 
 import { donutChart3d, DonutChart3dRenderFn, DonutChart3dDatum, DonutChart3dLabelFormatter } from "./donutChart3d";
 
@@ -10,11 +11,13 @@ const data: DonutChart3dDatum[] = [{
     color: "rgba(0, 255, 0, 0.5)",
     value: 2
 }, {
-    color: rgb(0, 0, 255, 0),
+    color: d3.rgb(0, 0, 255, 0),
     value: 3
 }];
 
 const labelFormat: DonutChart3dLabelFormatter = (name, value, percentage) => `${name}: ${value} (${percentage})`;
+
+const transitionDuration = faker.random.number();
 
 const height = `${faker.random.number()}px`;
 const width = `${faker.random.number()}px`;
@@ -27,11 +30,12 @@ describe("property getters/setters", () => {
     });
 
     describe.each`
-        property         | defaultValue | value
-        ${"data"}        | ${[]}        | ${data}
-        ${"height"}      | ${null}      | ${height}
-        ${"labelFormat"} | ${null}      | ${labelFormat}
-        ${"width"}       | ${null}      | ${width}
+        property                | defaultValue                  | value
+        ${"data"}               | ${[]}                         | ${data}
+        ${"height"}             | ${null}                       | ${height}
+        ${"labelFormat"}        | ${null}                       | ${labelFormat}
+        ${"transitionDuration"} | ${d3.transition().duration()} | ${transitionDuration}
+        ${"width"}              | ${null}                       | ${width}
     `("$property", ({ property, defaultValue, value }: {
         property: keyof typeof chart;
         defaultValue: any;
@@ -77,8 +81,8 @@ describe("when the chart is rendered", () => {
             .height(height)
             .width(width);
 
-        chart(select(root));
-        timerFlush();
+        chart(d3.select(root));
+        d3.timerFlush();
 
         x3dElement = root.querySelector("x3d");
         sceneElement = x3dElement && x3dElement.querySelector("scene");

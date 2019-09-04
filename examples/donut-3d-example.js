@@ -13,7 +13,8 @@ const chartRoot = d3.select("#chart-root");
 
 const chart = donutChart3d()
     .data(data)
-    .labelFormat((name, value, percentage) => `${name} (${percentage.toFixed(0)}%)`)
+    .labelFormat((name, _value, percentage) => `${name} (${percentage.toFixed(0)}%)`)
+    .transitionDuration(500)
     .height(`100%`)
     .width(`100%`);
 

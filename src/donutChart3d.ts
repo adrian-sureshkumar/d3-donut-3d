@@ -1,4 +1,5 @@
-import { Selection, BaseType, rgb, RGBColor, HSLColor } from "d3";
+import * as d3 from "d3";
+import { Selection, BaseType, RGBColor, HSLColor } from "d3";
 
 import { FluentD3GetSet, makeFluentD3GetSet } from "./d3-utils/FluentD3GetSet";
 import { RenderFn } from "./d3-utils/RenderFn";
@@ -18,6 +19,7 @@ export interface DonutChart3dRenderFn<GElement extends BaseType, Datum, PElement
     data: FluentD3GetSet<this, DonutChart3dDatum[]>;
     height: FluentD3GetSet<this, string | null>;
     labelFormat: FluentD3GetSet<this, DonutChart3dLabelFormatter | null>;
+    transitionDuration: FluentD3GetSet<this, number>;
     width: FluentD3GetSet<this, string | null>;
 }
 
@@ -26,9 +28,8 @@ export function donutChart3d<GElement extends BaseType, Datum, PElement extends 
     let data: DonutChart3dDatum[] = [];
     let height: string | null = null;
     let labelFormat: DonutChart3dLabelFormatter | null = null;
+    let transitionDuration: number = d3.transition().duration();
     let width: string | null = null;
-
-    const transitionDuration = 500;
 
     const renderFn: DonutChart3dRenderFn<GElement, Datum, PElement, PDatum> = 
         selection => renderX3d(selection, getChartSeries());
@@ -36,6 +37,7 @@ export function donutChart3d<GElement extends BaseType, Datum, PElement extends 
     renderFn.data = makeFluentD3GetSet(renderFn, () => data, value => data = value);
     renderFn.height = makeFluentD3GetSet(renderFn, () => height, value => height = value);
     renderFn.labelFormat = makeFluentD3GetSet(renderFn, () => labelFormat, value => labelFormat = value);
+    renderFn.transitionDuration = makeFluentD3GetSet(renderFn, () => transitionDuration, value => transitionDuration = value);
     renderFn.width = makeFluentD3GetSet(renderFn, () => width, value => width = value);
 
     return renderFn;
@@ -65,7 +67,7 @@ export function donutChart3d<GElement extends BaseType, Datum, PElement extends 
                 const sliceLength = datum.value * valueToAngleRatio;
 
                 const color = typeof datum.color === "string"
-                    ? rgb(datum.color)
+                    ? d3.rgb(datum.color)
                     : datum.color.rgb();
 
                 const label = labelFormat
