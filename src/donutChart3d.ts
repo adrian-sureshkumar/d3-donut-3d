@@ -189,14 +189,25 @@ export function donutChart3d<GElement extends BaseType, Datum, PElement extends 
         .data(d => [d])
         .join("shape")
           .attr("class", "chart-series-label-line")
-        .selectAll("lineset")
-        .data(d => [d])
-        .join("lineset")
-          .attr("vertexCount", "2")
-        .selectAll("coordinate")
-        .data(d => [d])
-        .join("coordinate")
-          .attr("point", `${ outerRadius } 0 0 ${ outerRadius + labelOffset } 0 0`);
+          .call(s => s
+            .selectAll("lineset")
+            .data(d => [d])
+            .join("lineset")
+              .attr("vertexCount", "2")
+            .selectAll("coordinate")
+            .data(d => [d])
+            .join("coordinate")
+              .attr("point", `${ outerRadius } 0 0 ${ outerRadius + labelOffset } 0 0`)
+          )
+          .call(s => s
+            .selectAll("appearance")
+            .data(d => [d])
+            .join("appearance")
+            .selectAll("material")
+            .data(d => [d])
+            .join("material")
+              .attr("emissiveColor", "0.75 0.75 0.75")
+          );
     }
 
     function renderChartSeriesLabelText<GElement extends BaseType, PElement extends BaseType, PDatum>(
