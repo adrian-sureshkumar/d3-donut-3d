@@ -3,7 +3,7 @@ const { donutChart3d } = require("../lib");
 
 const colorScale = d3.scaleOrdinal(d3.schemeCategory10);
 
-const data = Array(10).fill(null).map((_, i) => ({
+const data = Array(26).fill(null).map((_, i) => ({
     color: colorScale(i),
     name: String.fromCharCode("A".charCodeAt() + i),
     value: 1
