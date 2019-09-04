@@ -173,7 +173,11 @@ export function donutChart3d<GElement extends BaseType, Datum, PElement extends 
         .data(d => d.label ? [d] : [])
         .join("transform")
           .attr("class", "chart-series-label")
-          .attr("rotation", d => `0 0 1 ${-d.sliceLength / 2}`)
+          .call(s => s
+            .transition()
+              .duration(transitionDuration)
+              .attr("rotation", d => `0 0 1 ${-d.sliceLength / 2}`)
+          )
         .call(renderChartSeriesLabelLines)
         .call(renderChartSeriesLabelText);
     }
@@ -192,7 +196,7 @@ export function donutChart3d<GElement extends BaseType, Datum, PElement extends 
         .selectAll("coordinate")
         .data(d => [d])
         .join("coordinate")
-          .attr("point", `${ outerRadius } 0 0 ${ outerRadius + labelOffset - 0.1 } 0 0`);
+          .attr("point", `${ outerRadius } 0 0 ${ outerRadius + labelOffset } 0 0`);
     }
 
     function renderChartSeriesLabelText<GElement extends BaseType, PElement extends BaseType, PDatum>(
@@ -203,6 +207,11 @@ export function donutChart3d<GElement extends BaseType, Datum, PElement extends 
         .join("transform")
           .attr("class", "chart-series-label-text")
           .attr("translation", `${outerRadius + labelOffset} 0 0`)
+          .call(s => s
+            .transition()
+              .duration(transitionDuration)
+              .attr("rotation", d => `0 0 1 ${-(Math.PI / 2) + d.sliceStart + d.sliceLength / 2}`)
+          )
         .selectAll("shape")
         .data(d => [d])
         .join("shape")
@@ -216,7 +225,7 @@ export function donutChart3d<GElement extends BaseType, Datum, PElement extends 
             .data(d => [d])
             .join("fontstyle")
               .attr("family", "sans-serif")
-              .attr("justify", '"begin" "middle"')
+              .attr("justify", '"middle" "middle"')
               .attr("size", "0.25")
           )
           .call(s => s
