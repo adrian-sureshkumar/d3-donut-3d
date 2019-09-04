@@ -28,10 +28,10 @@ export function donutChart3d<GElement extends BaseType, Datum, PElement extends 
     let labelFormat: DonutChart3dLabelFormatter | null = null;
     let width: string | null = null;
 
-    const renderFn: DonutChart3dRenderFn<GElement, Datum, PElement, PDatum> = (s) => {
-        const chartSeries = getChartSeries(data, labelFormat);
-        renderX3d(s, chartSeries, height, width);
-    }
+    const transitionDuration = 500;
+
+    const renderFn: DonutChart3dRenderFn<GElement, Datum, PElement, PDatum> = 
+        selection => renderX3d(selection, getChartSeries());
 
     renderFn.data = makeFluentD3GetSet(renderFn, () => data, value => data = value);
     renderFn.height = makeFluentD3GetSet(renderFn, () => height, value => height = value);
@@ -39,195 +39,191 @@ export function donutChart3d<GElement extends BaseType, Datum, PElement extends 
     renderFn.width = makeFluentD3GetSet(renderFn, () => width, value => width = value);
 
     return renderFn;
-}
 
-const transitionDuration = 500;
-
-interface ChartSeries {
-    color: RGBColor;
-    label: string;
-    sliceLength: number;
-    sliceStart: number;
-}
-
-function getChartSeries(data: DonutChart3dDatum[], labelFormat: DonutChart3dLabelFormatter | null): ChartSeries[] {
-    const chartSeries: ChartSeries[] = [];
-
-    if (data.length) {
-        const cumulativeValues = [0];
-        data.forEach((datum, i) => cumulativeValues.push(cumulativeValues[i] + datum.value));
-
-        const total = cumulativeValues[cumulativeValues.length - 1];
-
-        const valueToAngleRatio = 2 * Math.PI / total;
-
-        data.forEach((datum, i) => {
-            const percentage = datum.value / total * 100;
-
-            const sliceStart = cumulativeValues[i] * valueToAngleRatio;
-            const sliceLength = datum.value * valueToAngleRatio;
-
-            const color = typeof datum.color === "string"
-                ? rgb(datum.color)
-                : datum.color.rgb();
-
-            const label = labelFormat
-                ? labelFormat(datum.name || "", datum.value, percentage)
-                : "";
-
-            chartSeries.push({ sliceStart, sliceLength, color, label });
-        });
+    interface ChartSeries {
+        color: RGBColor;
+        label: string;
+        sliceLength: number;
+        sliceStart: number;
     }
 
-    return chartSeries;
-}
+    function getChartSeries(): ChartSeries[] {
+        const chartSeries: ChartSeries[] = [];
 
-function renderX3d<GElement extends BaseType, Datum, PElement extends BaseType, PDatum>(
-    s: Selection<GElement, Datum, PElement, PDatum>,
-    chartSeries: ChartSeries[],
-    height: string | null,
-    width: string | null
-): void {
-    s.selectAll("x3d")
-    .data([chartSeries])
-    .join("x3d")
-      .style("height", () => height)
-      .style("width", () => width)
-    .call(renderScene);
-}
+        if (data.length) {
+            const cumulativeValues = [0];
+            data.forEach((datum, i) => cumulativeValues.push(cumulativeValues[i] + datum.value));
 
-function renderScene<GElement extends BaseType, PElement extends BaseType, PDatum>(
-    s: Selection<GElement, ChartSeries[], PElement, PDatum>
-): void {
-    s.selectAll("scene")
-    .data(d => [d])
-    .join("scene")
-    .call(renderChart);
-}
+            const total = cumulativeValues[cumulativeValues.length - 1];
 
-function renderChart<GElement extends BaseType, PElement extends BaseType, PDatum>(
-    s: Selection<GElement, ChartSeries[], PElement, PDatum>
-): void {
-    s.selectAll("group.chart")
-    .data(d => [d])
-    .join("group")
-      .attr("class", "chart")
-    .call(renderChartSeries);
-}
+            const valueToAngleRatio = 2 * Math.PI / total;
 
-function renderChartSeries<GElement extends BaseType, PElement extends BaseType, PDatum>(
-    s: Selection<GElement, ChartSeries[], PElement, PDatum>
-): void {
-    s.selectAll("transform.chart-series")
-    .data(d => d)
-    .join("transform")
-      .attr("class", "chart-series")
-    .call(s =>
-        s.transition()
-          .duration(transitionDuration)
-          .attr("rotation", d => `0 0 1 ${(Math.PI / 2) - d.sliceStart}`)
-    )
-    .call(renderChartSeriesSlices)
-    .call(renderChartSeriesLabels);
-}
+            data.forEach((datum, i) => {
+                const percentage = datum.value / total * 100;
 
-function renderChartSeriesSlices<GElement extends BaseType, PElement extends BaseType, PDatum>(
-    s: Selection<GElement, ChartSeries, PElement, PDatum>
-): void {
-    s.selectAll("shape.chart-series-slice")
-    .data(d => [d])
-    .join("shape")
-      .attr("class", "chart-series-slice")
-    .call(s =>
-        s.selectAll("torus")
+                const sliceStart = cumulativeValues[i] * valueToAngleRatio;
+                const sliceLength = datum.value * valueToAngleRatio;
+
+                const color = typeof datum.color === "string"
+                    ? rgb(datum.color)
+                    : datum.color.rgb();
+
+                const label = labelFormat
+                    ? labelFormat(datum.name || "", datum.value, percentage)
+                    : "";
+
+                chartSeries.push({ sliceStart, sliceLength, color, label });
+            });
+        }
+
+        return chartSeries;
+    }
+
+    function renderX3d<GElement extends BaseType, Datum, PElement extends BaseType, PDatum>(
+        s: Selection<GElement, Datum, PElement, PDatum>,
+        chartSeries: ChartSeries[]
+    ): void {
+        s.selectAll("x3d")
+        .data([chartSeries])
+        .join("x3d")
+          .style("height", () => height)
+          .style("width", () => width)
+        .call(renderScene);
+    }
+
+    function renderScene<GElement extends BaseType, PElement extends BaseType, PDatum>(
+        s: Selection<GElement, ChartSeries[], PElement, PDatum>
+    ): void {
+        s.selectAll("scene")
         .data(d => [d])
-        .join("torus")
-          .attr("useGeoCache", false)
-        .transition()
-          .duration(transitionDuration)
-          .attr("angle", d => `${d.sliceLength}`)
-    )
-    .call(s =>
-        s.selectAll("appearance")
+        .join("scene")
+        .call(renderChart);
+    }
+
+    function renderChart<GElement extends BaseType, PElement extends BaseType, PDatum>(
+        s: Selection<GElement, ChartSeries[], PElement, PDatum>
+    ): void {
+        s.selectAll("group.chart")
         .data(d => [d])
-        .join("appearance")
+        .join("group")
+          .attr("class", "chart")
+        .call(renderChartSeries);
+    }
+
+    function renderChartSeries<GElement extends BaseType, PElement extends BaseType, PDatum>(
+        s: Selection<GElement, ChartSeries[], PElement, PDatum>
+    ): void {
+        s.selectAll("transform.chart-series")
+        .data(d => d)
+        .join("transform")
+          .attr("class", "chart-series")
         .call(s =>
-            s.selectAll("material")
-            .data(d => [d])
-            .join("material")
-              .attr("diffuseColor", d => `${d.color.r / 255} ${d.color.g / 255} ${d.color.b / 255}`)
-              .attr("transparency", d => `${1 - d.color.opacity}`)
+            s.transition()
+              .duration(transitionDuration)
+              .attr("rotation", d => `0 0 1 ${(Math.PI / 2) - d.sliceStart}`)
         )
-    );
-}
+        .call(renderChartSeriesSlices)
+        .call(renderChartSeriesLabels);
+    }
 
-function renderChartSeriesLabels<GElement extends BaseType, PElement extends BaseType, PDatum>(
-    s: Selection<GElement, ChartSeries, PElement, PDatum>
-): void {
-    const labelOffset = 2.5;
-    s.selectAll("transform.chart-series-label")
-    .data(d => d.label ? [d] : [])
-    .join("transform")
-      .attr("class", "chart-series-label")
-      .attr("translation", `${labelOffset} 0 0`)
-      .attr("center", `${-labelOffset} 0 0`)
-      .attr("rotation", d => `0 0 1 ${-d.sliceLength / 2}`)
-    .call(renderChartSeriesLabelLines)
-    .call(renderChartSeriesLabelText);
-}
+    function renderChartSeriesSlices<GElement extends BaseType, PElement extends BaseType, PDatum>(
+        s: Selection<GElement, ChartSeries, PElement, PDatum>
+    ): void {
+        s.selectAll("shape.chart-series-slice")
+        .data(d => [d])
+        .join("shape")
+          .attr("class", "chart-series-slice")
+        .call(s =>
+            s.selectAll("torus")
+            .data(d => [d])
+            .join("torus")
+              .attr("useGeoCache", false)
+            .transition()
+              .duration(transitionDuration)
+              .attr("angle", d => `${d.sliceLength}`)
+        )
+        .call(s =>
+            s.selectAll("appearance")
+            .data(d => [d])
+            .join("appearance")
+            .call(s =>
+                s.selectAll("material")
+                .data(d => [d])
+                .join("material")
+                  .attr("diffuseColor", d => `${d.color.r / 255} ${d.color.g / 255} ${d.color.b / 255}`)
+                  .attr("transparency", d => `${1 - d.color.opacity}`)
+            )
+        );
+    }
 
-function renderChartSeriesLabelLines<GElement extends BaseType, PElement extends BaseType, PDatum>(
-    s: Selection<GElement, ChartSeries, PElement, PDatum>
-): void {
-    s.selectAll("shape.chart-series-label-line")
-    .data(d => [d])
-    .join("shape")
-      .attr("class", "chart-series-label-line")
-    .call(s =>
-        s.selectAll("lineset")
-        .data(d => [d])
-        .join("lineset")
-          .attr("vertexCount", "2")
-        .call(s =>
-            s.selectAll("coordinate")
-            .data(d => [d])
-            .join("coordinate")
-              .attr("point", "-0.1 0 0 -1 0 0")
-        )
-    );
-}
+    function renderChartSeriesLabels<GElement extends BaseType, PElement extends BaseType, PDatum>(
+        s: Selection<GElement, ChartSeries, PElement, PDatum>
+    ): void {
+        const labelOffset = 2.5;
+        s.selectAll("transform.chart-series-label")
+        .data(d => d.label ? [d] : [])
+        .join("transform")
+          .attr("class", "chart-series-label")
+          .attr("translation", `${labelOffset} 0 0`)
+          .attr("center", `${-labelOffset} 0 0`)
+          .attr("rotation", d => `0 0 1 ${-d.sliceLength / 2}`)
+        .call(renderChartSeriesLabelLines)
+        .call(renderChartSeriesLabelText);
+    }
 
-function renderChartSeriesLabelText<GElement extends BaseType, PElement extends BaseType, PDatum>(
-    s: Selection<GElement, ChartSeries, PElement, PDatum>
-): void {
-    s.selectAll("shape.chart-series-label-text")
-    .data(d => [d])
-    .join("shape")
-      .attr("class", "chart-series-label-text")
-    .call(s =>
-        s.selectAll("text")
+    function renderChartSeriesLabelLines<GElement extends BaseType, PElement extends BaseType, PDatum>(
+        s: Selection<GElement, ChartSeries, PElement, PDatum>
+    ): void {
+        s.selectAll("shape.chart-series-label-line")
         .data(d => [d])
-        .join("text")
-          .attr("string", d => d.label)
-          .attr("solid", false)
+        .join("shape")
+          .attr("class", "chart-series-label-line")
         .call(s =>
-            s.selectAll("fontstyle")
+            s.selectAll("lineset")
             .data(d => [d])
-            .join("fontstyle")
-              .attr("family", "sans-serif")
-              .attr("justify", '"begin" "middle"')
-              .attr("size", "0.25")
-        )
-    )
-    .call(s =>
-        s.selectAll("appearance")
+            .join("lineset")
+              .attr("vertexCount", "2")
+            .call(s =>
+                s.selectAll("coordinate")
+                .data(d => [d])
+                .join("coordinate")
+                  .attr("point", "-0.1 0 0 -1 0 0")
+            )
+        );
+    }
+
+    function renderChartSeriesLabelText<GElement extends BaseType, PElement extends BaseType, PDatum>(
+        s: Selection<GElement, ChartSeries, PElement, PDatum>
+    ): void {
+        s.selectAll("shape.chart-series-label-text")
         .data(d => [d])
-        .join("appearance")
+        .join("shape")
+          .attr("class", "chart-series-label-text")
         .call(s =>
-            s.selectAll("material")
+            s.selectAll("text")
             .data(d => [d])
-            .join("material")
-              .attr("diffuseColor", "0 0 0")
+            .join("text")
+              .attr("string", d => d.label)
+              .attr("solid", false)
+            .call(s =>
+                s.selectAll("fontstyle")
+                .data(d => [d])
+                .join("fontstyle")
+                  .attr("family", "sans-serif")
+                  .attr("justify", '"begin" "middle"')
+                  .attr("size", "0.25")
+            )
         )
-    );
+        .call(s =>
+            s.selectAll("appearance")
+            .data(d => [d])
+            .join("appearance")
+            .call(s =>
+                s.selectAll("material")
+                .data(d => [d])
+                .join("material")
+                  .attr("diffuseColor", "0 0 0")
+            )
+        );
+    }
 }
