@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc --project tsconfig.build.json",
-    "bundle:examples": "browserify examples/donut-3d-example.js -o examples/donut-3d-example.bundle.js",
+    "bundle:examples": "browserify -p tinyify examples/donut-3d-example.js -o examples/donut-3d-example.bundle.js",
     "test": "jest",
     "test:watch": "npm run test -- --watch",
     "type-check": "tsc --noEmit",
@@ -30,6 +30,7 @@
     "eslint": "^6.1.0",
     "faker": "^4.1.0",
     "jest": "^24.9.0",
+    "tinyify": "^2.5.1",
     "ts-jest": "^24.0.2",
     "typescript": "^3.5.3"
   },
@@ -50,7 +51,12 @@
       "plugin:@typescript-eslint/recommended"
     ],
     "rules": {
-      "@typescript-eslint/no-use-before-define": ["error", { "functions": false }]
+      "@typescript-eslint/no-use-before-define": [
+        "error",
+        {
+          "functions": false
+        }
+      ]
     }
   },
   "eslintIgnore": [
