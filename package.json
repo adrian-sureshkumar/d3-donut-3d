@@ -2,10 +2,14 @@
   "name": "@adrian-sureshkumar/d3-donut-3d",
   "version": "1.0.0",
   "description": "Library for rendering 3D donut charts with D3",
-  "main": "index.js",
+  "main": "lib/index.js",
+  "files": [
+    "lib"
+  ],
   "scripts": {
     "build": "tsc --project tsconfig.build.json",
     "bundle:examples": "browserify -p tinyify examples/donut-3d-example.js -o examples/donut-3d-example.bundle.js",
+    "prepack": "npm run build",
     "test": "jest",
     "test:watch": "npm run test -- --watch",
     "type-check": "tsc --noEmit",
