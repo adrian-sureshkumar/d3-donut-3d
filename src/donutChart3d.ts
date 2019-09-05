@@ -25,9 +25,7 @@ export interface DonutChart3dRenderFn<GElement extends BaseType, Datum, PElement
 
 const minorRadius = 0.5;
 const majorRadius = 1;
-
 const outerRadius = majorRadius + minorRadius;
-const innerRadius = majorRadius - minorRadius;
 
 const labelOffset = 1.5;
 
