@@ -7,8 +7,10 @@
     "lib"
   ],
   "scripts": {
-    "clean": "rimraf lib examples/**/*.bundle.js",
-    "prebuild": "npm run clean",
+    "clean": "npm run clean:build && npm run clean:examples",
+    "clean:build": "rimraf lib",
+    "clean:examples": "rimraf examples/**/*.bundle.js",
+    "prebuild": "npm run clean:build",
     "build": "tsc --project tsconfig.build.json",
     "bundle:examples": "browserify -p tinyify examples/donut-3d-example.js -o examples/donut-3d-example.bundle.js",
     "prepack": "npm run build",
