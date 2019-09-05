@@ -1,5 +1,5 @@
 {
-  "name": "d3-donut-3d",
+  "name": "@adrian-sureshkumar/d3-donut-3d",
   "version": "1.0.0",
   "description": "Library for rendering 3D donut charts with D3",
   "main": "index.js",
@@ -16,6 +16,7 @@
     "url": "git+https://github.com/adrian-sureshkumar/d3-donut-3d.git"
   },
   "author": "Adrian Sureshkumar",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/adrian-sureshkumar/d3-donut-3d/issues"
   },
