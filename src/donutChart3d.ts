@@ -55,7 +55,7 @@ export function donutChart3d<GElement extends BaseType, PElement extends BaseTyp
         sliceStart: number;
     }
 
-    function getChartSeries(): ChartSeries[] {
+    function buildChartSeries(): ChartSeries[] {
         const chartSeries: ChartSeries[] = [];
 
         if (data.length) {
@@ -89,10 +89,10 @@ export function donutChart3d<GElement extends BaseType, PElement extends BaseTyp
 
     function renderX3d(s: Selection<GElement, unknown, PElement, unknown>): void {
         s.selectAll("x3d")
-        .data([getChartSeries()])
+        .data([buildChartSeries()])
         .join("x3d")
-          .style("height", () => height)
-          .style("width", () => width)
+          .style("height", `${height}`)
+          .style("width", `${width}`)
           .call(renderScene);
     }
 
