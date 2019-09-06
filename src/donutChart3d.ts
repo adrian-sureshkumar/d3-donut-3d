@@ -38,7 +38,7 @@ export function donutChart3d<GElement extends BaseType, PElement extends BaseTyp
     let width: string | null = null;
 
     const renderFn: DonutChart3dRenderFn<GElement, PElement> = 
-        selection => renderX3d(selection, getChartSeries());
+      selection => renderX3d(selection);
 
     renderFn.data = makeFluentD3GetSet(renderFn, () => data, value => data = value);
     renderFn.height = makeFluentD3GetSet(renderFn, () => height, value => height = value);
@@ -87,30 +87,23 @@ export function donutChart3d<GElement extends BaseType, PElement extends BaseTyp
         return chartSeries;
     }
 
-    function renderX3d<GElement extends BaseType, PElement extends BaseType>(
-        s: Selection<GElement, unknown, PElement, unknown>,
-        chartSeries: ChartSeries[]
-    ): void {
+    function renderX3d(s: Selection<GElement, unknown, PElement, unknown>): void {
         s.selectAll("x3d")
-        .data([chartSeries])
+        .data([getChartSeries()])
         .join("x3d")
           .style("height", () => height)
           .style("width", () => width)
           .call(renderScene);
     }
 
-    function renderScene<GElement extends BaseType, PElement extends BaseType>(
-        s: Selection<GElement, ChartSeries[], PElement, unknown>
-    ): void {
+    function renderScene(s: Selection<BaseType, ChartSeries[], GElement, unknown>): void {
         s.selectAll("scene")
         .data(d => [d])
         .join("scene")
           .call(renderChart);
     }
 
-    function renderChart<GElement extends BaseType, PElement extends BaseType>(
-        s: Selection<GElement, ChartSeries[], PElement, ChartSeries[]>
-    ): void {
+    function renderChart(s: Selection<BaseType, ChartSeries[], BaseType, ChartSeries[]>): void {
         s.selectAll("group.chart")
         .data(d => [d])
         .join("group")
@@ -118,9 +111,7 @@ export function donutChart3d<GElement extends BaseType, PElement extends BaseTyp
           .call(renderChartSeries);
     }
 
-    function renderChartSeries<GElement extends BaseType, PElement extends BaseType>(
-        s: Selection<GElement, ChartSeries[], PElement, ChartSeries[]>
-    ): void {
+    function renderChartSeries(s: Selection<BaseType, ChartSeries[], BaseType, ChartSeries[]>): void {
         s.selectAll("transform.chart-series")
         .data(d => d)
         .join("transform")
@@ -134,9 +125,7 @@ export function donutChart3d<GElement extends BaseType, PElement extends BaseTyp
           .call(renderChartSeriesLabels);
     }
 
-    function renderChartSeriesSlices<GElement extends BaseType, PElement extends BaseType>(
-        s: Selection<GElement, ChartSeries, PElement, ChartSeries[]>
-    ): void {
+    function renderChartSeriesSlices(s: Selection<BaseType, ChartSeries, BaseType, ChartSeries[]>): void {
         s.selectAll("shape.chart-series-slice")
         .data(d => [d])
         .join("shape")
@@ -164,9 +153,7 @@ export function donutChart3d<GElement extends BaseType, PElement extends BaseTyp
           );
     }
 
-    function renderChartSeriesLabels<GElement extends BaseType, PElement extends BaseType>(
-        s: Selection<GElement, ChartSeries, PElement, ChartSeries[]>
-    ): void {
+    function renderChartSeriesLabels(s: Selection<BaseType, ChartSeries, BaseType, ChartSeries[]>): void {
         s.selectAll("transform.chart-series-label")
         .data(d => d.label ? [d] : [])
         .join("transform")
@@ -180,9 +167,7 @@ export function donutChart3d<GElement extends BaseType, PElement extends BaseTyp
         .call(renderChartSeriesLabelText);
     }
 
-    function renderChartSeriesLabelLines<GElement extends BaseType, PElement extends BaseType>(
-        s: Selection<GElement, ChartSeries, PElement, ChartSeries>
-    ): void {
+    function renderChartSeriesLabelLines(s: Selection<BaseType, ChartSeries, BaseType, ChartSeries>): void {
         s.selectAll("shape.chart-series-label-line")
         .data(d => [d])
         .join("shape")
@@ -208,9 +193,7 @@ export function donutChart3d<GElement extends BaseType, PElement extends BaseTyp
           );
     }
 
-    function renderChartSeriesLabelText<GElement extends BaseType, PElement extends BaseType>(
-        s: Selection<GElement, ChartSeries, PElement, ChartSeries>
-    ): void {
+    function renderChartSeriesLabelText(s: Selection<BaseType, ChartSeries, BaseType, ChartSeries>): void {
         s.selectAll("transform.chart-series-label-text")
         .data(d => [d])
         .join("transform")
