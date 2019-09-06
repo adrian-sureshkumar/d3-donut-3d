@@ -25,11 +25,27 @@ export interface DonutChart3dProps {
 export type DonutChart3dRenderFn<GElement extends BaseType, PElement extends BaseType> =
     RenderFn<GElement, unknown, PElement, unknown, DonutChart3dProps>;
 
-const minorRadius = 0.5;
-const majorRadius = 1;
-const outerRadius = majorRadius + minorRadius;
+export function donutChart3d<GElement extends BaseType, PElement extends BaseType>(
+): DonutChart3dRenderFn<GElement, PElement> {
+    const props: DonutChart3dProps = {
+        data: [],
+        height: null,
+        labelFormat: null,
+        transitionDuration: d3.transition().duration(),
+        width: null
+    }
 
-const labelOffset = 1.5;
+    const renderFn: DonutChart3dRenderFn<GElement, PElement> =
+        selection => render(selection, props);
+
+    renderFn.data = makeFluentGetSetProp(renderFn, props, "data");
+    renderFn.height = makeFluentGetSetProp(renderFn, props, "height");
+    renderFn.labelFormat = makeFluentGetSetProp(renderFn, props, "labelFormat");
+    renderFn.transitionDuration = makeFluentGetSetProp(renderFn, props, "transitionDuration");
+    renderFn.width = makeFluentGetSetProp(renderFn, props, "width");
+
+    return renderFn;
+}
 
 interface ChartSeries {
     color: RGBColor;
@@ -70,26 +86,17 @@ function buildChartSeries({ data, labelFormat }: DonutChart3dProps): ChartSeries
     return chartSeries;
 }
 
-export function donutChart3d<GElement extends BaseType, PElement extends BaseType>(
-): DonutChart3dRenderFn<GElement, PElement> {
-    const props: DonutChart3dProps = {
-        data: [],
-        height: null,
-        labelFormat: null,
-        transitionDuration: d3.transition().duration(),
-        width: null
-    }
+const minorRadius = 0.5;
+const majorRadius = 1;
+const outerRadius = majorRadius + minorRadius;
 
-    const renderFn: DonutChart3dRenderFn<GElement, PElement> =
-        selection => renderX3d(selection);
+const labelOffset = 1.5;
 
-    renderFn.data = makeFluentGetSetProp(renderFn, props, "data");
-    renderFn.height = makeFluentGetSetProp(renderFn, props, "height");
-    renderFn.labelFormat = makeFluentGetSetProp(renderFn, props, "labelFormat");
-    renderFn.transitionDuration = makeFluentGetSetProp(renderFn, props, "transitionDuration");
-    renderFn.width = makeFluentGetSetProp(renderFn, props, "width");
-
-    return renderFn;
+function render<GElement extends BaseType, PElement extends BaseType>(
+    selection: Selection<GElement, unknown, PElement, unknown>,
+    props: DonutChart3dProps
+): void {
+    return renderX3d(selection);
 
     function renderX3d(s: Selection<GElement, unknown, PElement, unknown>): void {
         s.selectAll("x3d")
