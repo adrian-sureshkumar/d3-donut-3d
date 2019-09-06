@@ -38,7 +38,7 @@ interface ChartSeries {
     sliceStart: number;
 }
 
-function buildChartSeries({data, labelFormat}: DonutChart3dProps): ChartSeries[] {
+function buildChartSeries({ data, labelFormat }: DonutChart3dProps): ChartSeries[] {
     const chartSeries: ChartSeries[] = [];
 
     if (data.length) {
