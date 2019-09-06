@@ -1,7 +1,7 @@
 import * as d3 from "d3";
 import { Selection, BaseType, RGBColor, HSLColor } from "d3";
 
-import { makeFluentGetSet } from "./d3-utils/FluentGetSet";
+import { makeFluentGetSetProp } from "./d3-utils/FluentGetSet";
 import { RenderFn } from "./d3-utils/RenderFn";
 
 export interface DonutChart3dDatum {
@@ -83,16 +83,11 @@ export function donutChart3d<GElement extends BaseType, PElement extends BaseTyp
     const renderFn: DonutChart3dRenderFn<GElement, PElement> =
         selection => renderX3d(selection);
 
-    renderFn.data = makeFluentGetSet(
-        renderFn, () => props.data, value => props.data = value);
-    renderFn.height = makeFluentGetSet(
-        renderFn, () => props.height, value => props.height = value);
-    renderFn.labelFormat = makeFluentGetSet(
-        renderFn, () => props.labelFormat, value => props.labelFormat = value);
-    renderFn.transitionDuration = makeFluentGetSet(
-        renderFn, () => props.transitionDuration, value => props.transitionDuration = value);
-    renderFn.width = makeFluentGetSet(
-        renderFn, () => props.width, value => props.width = value);
+    renderFn.data = makeFluentGetSetProp(renderFn, props, "data");
+    renderFn.height = makeFluentGetSetProp(renderFn, props, "height");
+    renderFn.labelFormat = makeFluentGetSetProp(renderFn, props, "labelFormat");
+    renderFn.transitionDuration = makeFluentGetSetProp(renderFn, props, "transitionDuration");
+    renderFn.width = makeFluentGetSetProp(renderFn, props, "width");
 
     return renderFn;
 

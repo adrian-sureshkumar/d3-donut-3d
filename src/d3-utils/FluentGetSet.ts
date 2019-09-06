@@ -23,3 +23,11 @@ export function makeFluentGetSet<Self extends {}, Value>(
 
     return fluentGetSet;
 }
+
+export function makeFluentGetSetProp<Self, Props, Prop extends keyof Props>(
+    self: Self,
+    props: Props,
+    prop: Prop
+): FluentGetSet<Self, Props[Prop]> {
+    return makeFluentGetSet(self, () => props[prop], value => props[prop] = value);
+}
