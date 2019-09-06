@@ -1,7 +1,11 @@
-const d3 = require("d3");
+const { scaleOrdinal } = require("d3-scale");
+const { schemeCategory10 } = require("d3-scale-chromatic");
+const { select } = require("d3-selection");
+const { interval } = require("d3-timer");
+
 const { donutChart3d } = require("../lib");
 
-const colorScale = d3.scaleOrdinal(d3.schemeCategory10);
+const colorScale = scaleOrdinal(schemeCategory10);
 
 const data = Array(26).fill(null).map((_, i) => ({
     color: colorScale(i),
@@ -9,7 +13,7 @@ const data = Array(26).fill(null).map((_, i) => ({
     value: 1
 }));
 
-const chartRoot = d3.select("#chart-root");
+const chartRoot = select("#chart-root");
 
 const chart = donutChart3d()
     .data(data)
@@ -24,4 +28,4 @@ function render() {
 }
 
 render();
-d3.interval(render, 3000);
+interval(render, 3000);

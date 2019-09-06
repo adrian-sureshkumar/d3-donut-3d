@@ -1,5 +1,7 @@
-import * as d3 from "d3";
-import { BaseType } from "d3";
+import { rgb } from "d3-color";
+import { BaseType, select } from "d3-selection";
+import { timerFlush } from "d3-timer";
+import { transition } from "d3-transition";
 import * as faker from "faker";
 
 import { donutChart3d, DonutChart3dRenderFn, DonutChart3dDatum, DonutChart3dLabelFormatter } from "./donutChart3d";
@@ -11,7 +13,7 @@ const data: DonutChart3dDatum[] = [{
     color: "rgba(0, 255, 0, 0.5)",
     value: 2
 }, {
-    color: d3.rgb(0, 0, 255, 0),
+    color: rgb(0, 0, 255, 0),
     value: 3
 }];
 
@@ -30,12 +32,12 @@ describe("property getters/setters", () => {
     });
 
     describe.each`
-        property                | defaultValue                  | value
-        ${"data"}               | ${[]}                         | ${data}
-        ${"height"}             | ${null}                       | ${height}
-        ${"labelFormat"}        | ${null}                       | ${labelFormat}
-        ${"transitionDuration"} | ${d3.transition().duration()} | ${transitionDuration}
-        ${"width"}              | ${null}                       | ${width}
+        property                | defaultValue               | value
+        ${"data"}               | ${[]}                      | ${data}
+        ${"height"}             | ${null}                    | ${height}
+        ${"labelFormat"}        | ${null}                    | ${labelFormat}
+        ${"transitionDuration"} | ${transition().duration()} | ${transitionDuration}
+        ${"width"}              | ${null}                    | ${width}
     `("$property", ({ property, defaultValue, value }: {
         property: keyof typeof chart;
         defaultValue: any;
@@ -81,8 +83,8 @@ describe("when the chart is rendered", () => {
             .height(height)
             .width(width);
 
-        chart(d3.select(root));
-        d3.timerFlush();
+        chart(select(root));
+        timerFlush();
 
         x3dElement = root.querySelector("x3d");
         sceneElement = x3dElement && x3dElement.querySelector("scene");

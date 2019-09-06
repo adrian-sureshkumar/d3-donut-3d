@@ -1,4 +1,4 @@
-import { BaseType, Selection } from "d3";
+import { BaseType, Selection } from "d3-selection";
 
 import { FluentGetSet } from "./FluentGetSet";
 

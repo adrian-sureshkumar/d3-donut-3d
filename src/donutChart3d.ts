@@ -1,5 +1,6 @@
-import * as d3 from "d3";
-import { Selection, BaseType, RGBColor, HSLColor } from "d3";
+import { rgb, RGBColor, HSLColor } from "d3-color";
+import { BaseType, Selection } from "d3-selection";
+import { transition } from "d3-transition";
 
 import { makeFluentGetSetProp } from "./d3-utils/FluentGetSet";
 import { RenderFn } from "./d3-utils/RenderFn";
@@ -31,7 +32,7 @@ export function donutChart3d<GElement extends BaseType, PElement extends BaseTyp
         data: [],
         height: null,
         labelFormat: null,
-        transitionDuration: d3.transition().duration(),
+        transitionDuration: transition().duration(),
         width: null
     }
 
@@ -72,7 +73,7 @@ function buildChartSeries({ data, labelFormat }: DonutChart3dProps): ChartSeries
             const sliceLength = datum.value * valueToAngleRatio;
 
             const color = typeof datum.color === "string"
-                ? d3.rgb(datum.color)
+                ? rgb(datum.color)
                 : datum.color.rgb();
 
             const label = labelFormat
