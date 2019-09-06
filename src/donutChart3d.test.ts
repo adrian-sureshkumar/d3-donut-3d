@@ -23,7 +23,7 @@ const height = `${faker.random.number()}px`;
 const width = `${faker.random.number()}px`;
 
 describe("property getters/setters", () => {
-    let chart: DonutChart3dRenderFn<BaseType, null, BaseType, null>;
+    let chart: DonutChart3dRenderFn<BaseType, BaseType>;
 
     beforeEach(() => {
         chart = donutChart3d();
@@ -70,13 +70,13 @@ describe("when the chart is rendered", () => {
     let x3dElement: HTMLElement | null;
     let sceneElement: HTMLElement | null;
     let chartElement: HTMLElement | null;
-    let chart: DonutChart3dRenderFn<HTMLDivElement, null, null, undefined>;
+    let chart: DonutChart3dRenderFn<HTMLDivElement, null>;
 
     beforeAll(() => {
         root = document.createElement("div")
         document.body.append(root);
 
-        chart = donutChart3d<HTMLDivElement, null, null, undefined>()
+        chart = donutChart3d<HTMLDivElement, null>()
             .data(data)
             .height(height)
             .width(width);

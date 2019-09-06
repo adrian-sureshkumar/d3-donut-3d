@@ -14,8 +14,8 @@ export interface DonutChart3dLabelFormatter {
     (name: string, value: number, percentage: number): string;
 }
 
-export interface DonutChart3dRenderFn<GElement extends BaseType, Datum, PElement extends BaseType, PDatum>
-    extends RenderFn<GElement, Datum, PElement, PDatum> {
+export interface DonutChart3dRenderFn<GElement extends BaseType, PElement extends BaseType>
+    extends RenderFn<GElement, unknown, PElement, unknown> {
     data: FluentD3GetSet<this, DonutChart3dDatum[]>;
     height: FluentD3GetSet<this, string | null>;
     labelFormat: FluentD3GetSet<this, DonutChart3dLabelFormatter | null>;
@@ -29,15 +29,15 @@ const outerRadius = majorRadius + minorRadius;
 
 const labelOffset = 1.5;
 
-export function donutChart3d<GElement extends BaseType, Datum, PElement extends BaseType, PDatum>(
-): DonutChart3dRenderFn<GElement, Datum, PElement, PDatum> {
+export function donutChart3d<GElement extends BaseType, PElement extends BaseType>(
+): DonutChart3dRenderFn<GElement, PElement> {
     let data: DonutChart3dDatum[] = [];
     let height: string | null = null;
     let labelFormat: DonutChart3dLabelFormatter | null = null;
     let transitionDuration: number = d3.transition().duration();
     let width: string | null = null;
 
-    const renderFn: DonutChart3dRenderFn<GElement, Datum, PElement, PDatum> = 
+    const renderFn: DonutChart3dRenderFn<GElement, PElement> = 
         selection => renderX3d(selection, getChartSeries());
 
     renderFn.data = makeFluentD3GetSet(renderFn, () => data, value => data = value);
@@ -87,8 +87,8 @@ export function donutChart3d<GElement extends BaseType, Datum, PElement extends 
         return chartSeries;
     }
 
-    function renderX3d<GElement extends BaseType, Datum, PElement extends BaseType, PDatum>(
-        s: Selection<GElement, Datum, PElement, PDatum>,
+    function renderX3d<GElement extends BaseType, PElement extends BaseType>(
+        s: Selection<GElement, unknown, PElement, unknown>,
         chartSeries: ChartSeries[]
     ): void {
         s.selectAll("x3d")
@@ -99,8 +99,8 @@ export function donutChart3d<GElement extends BaseType, Datum, PElement extends 
           .call(renderScene);
     }
 
-    function renderScene<GElement extends BaseType, PElement extends BaseType, PDatum>(
-        s: Selection<GElement, ChartSeries[], PElement, PDatum>
+    function renderScene<GElement extends BaseType, PElement extends BaseType>(
+        s: Selection<GElement, ChartSeries[], PElement, unknown>
     ): void {
         s.selectAll("scene")
         .data(d => [d])
@@ -108,8 +108,8 @@ export function donutChart3d<GElement extends BaseType, Datum, PElement extends 
           .call(renderChart);
     }
 
-    function renderChart<GElement extends BaseType, PElement extends BaseType, PDatum>(
-        s: Selection<GElement, ChartSeries[], PElement, PDatum>
+    function renderChart<GElement extends BaseType, PElement extends BaseType>(
+        s: Selection<GElement, ChartSeries[], PElement, ChartSeries[]>
     ): void {
         s.selectAll("group.chart")
         .data(d => [d])
@@ -118,8 +118,8 @@ export function donutChart3d<GElement extends BaseType, Datum, PElement extends 
           .call(renderChartSeries);
     }
 
-    function renderChartSeries<GElement extends BaseType, PElement extends BaseType, PDatum>(
-        s: Selection<GElement, ChartSeries[], PElement, PDatum>
+    function renderChartSeries<GElement extends BaseType, PElement extends BaseType>(
+        s: Selection<GElement, ChartSeries[], PElement, ChartSeries[]>
     ): void {
         s.selectAll("transform.chart-series")
         .data(d => d)
@@ -134,8 +134,8 @@ export function donutChart3d<GElement extends BaseType, Datum, PElement extends 
           .call(renderChartSeriesLabels);
     }
 
-    function renderChartSeriesSlices<GElement extends BaseType, PElement extends BaseType, PDatum>(
-        s: Selection<GElement, ChartSeries, PElement, PDatum>
+    function renderChartSeriesSlices<GElement extends BaseType, PElement extends BaseType>(
+        s: Selection<GElement, ChartSeries, PElement, ChartSeries[]>
     ): void {
         s.selectAll("shape.chart-series-slice")
         .data(d => [d])
@@ -164,8 +164,8 @@ export function donutChart3d<GElement extends BaseType, Datum, PElement extends 
           );
     }
 
-    function renderChartSeriesLabels<GElement extends BaseType, PElement extends BaseType, PDatum>(
-        s: Selection<GElement, ChartSeries, PElement, PDatum>
+    function renderChartSeriesLabels<GElement extends BaseType, PElement extends BaseType>(
+        s: Selection<GElement, ChartSeries, PElement, ChartSeries[]>
     ): void {
         s.selectAll("transform.chart-series-label")
         .data(d => d.label ? [d] : [])
@@ -180,8 +180,8 @@ export function donutChart3d<GElement extends BaseType, Datum, PElement extends 
         .call(renderChartSeriesLabelText);
     }
 
-    function renderChartSeriesLabelLines<GElement extends BaseType, PElement extends BaseType, PDatum>(
-        s: Selection<GElement, ChartSeries, PElement, PDatum>
+    function renderChartSeriesLabelLines<GElement extends BaseType, PElement extends BaseType>(
+        s: Selection<GElement, ChartSeries, PElement, ChartSeries>
     ): void {
         s.selectAll("shape.chart-series-label-line")
         .data(d => [d])
@@ -208,8 +208,8 @@ export function donutChart3d<GElement extends BaseType, Datum, PElement extends 
           );
     }
 
-    function renderChartSeriesLabelText<GElement extends BaseType, PElement extends BaseType, PDatum>(
-        s: Selection<GElement, ChartSeries, PElement, PDatum>
+    function renderChartSeriesLabelText<GElement extends BaseType, PElement extends BaseType>(
+        s: Selection<GElement, ChartSeries, PElement, ChartSeries>
     ): void {
         s.selectAll("transform.chart-series-label-text")
         .data(d => [d])
