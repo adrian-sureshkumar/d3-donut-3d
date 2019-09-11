@@ -19,8 +19,8 @@ const chart = donutChart3d()
     .data(data)
     .labelFormat((name, _value, percentage) => `${name} (${percentage.toFixed(0)}%)`)
     .transitionDuration(500)
-    .height(`100%`)
-    .width(`100%`);
+    .height("100%")
+    .width("100%");
 
 function render() {
     data.forEach(datum => datum.value = Math.random());

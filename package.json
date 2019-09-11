@@ -1,7 +1,7 @@
 {
   "name": "@adrian-sureshkumar/d3-donut-3d",
   "version": "1.0.0",
-  "description": "Library for rendering 3D donut charts with D3",
+  "description": "Library for rendering 3D donut charts with D3 using X3DOM.",
   "main": "lib/index.js",
   "files": [
     "lib"
@@ -45,8 +45,7 @@
   },
   "dependencies": {
     "@types/d3": "^5.7.2",
-    "d3": "^5.9.7",
-    "x3dom": "^1.8.0"
+    "d3": "^5.9.7"
   },
   "eslintConfig": {
     "parserOptions": {
