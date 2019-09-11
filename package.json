@@ -23,7 +23,15 @@
     "type": "git",
     "url": "git+https://github.com/adrian-sureshkumar/d3-donut-3d.git"
   },
-  "author": "Adrian Sureshkumar",
+  "keywords": [
+    "3d",
+    "chart",
+    "d3",
+    "donut",
+    "dougnut",
+    "x3d"
+  ],
+  "author": "Adrian Sureshkumar <npm@adrian-sureshkumar.com>",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/adrian-sureshkumar/d3-donut-3d/issues"
