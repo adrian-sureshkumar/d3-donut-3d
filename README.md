@@ -12,7 +12,7 @@ Include [X3DOM](www.x3dom.org) in the head of your HTML:
 <link rel="stylesheet" href="http://www.x3dom.org/release/x3dom.css">
 ```
 
-Include `donutChartd3` in your JavaScript code:
+Include `donutChart3d` in your JavaScript code:
 
 ```
 // CommonJS module syntax
