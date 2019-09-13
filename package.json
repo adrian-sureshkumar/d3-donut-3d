@@ -1,6 +1,6 @@
 {
   "name": "@adrian-sureshkumar/d3-donut-3d",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Library for rendering 3D donut charts with D3 using X3DOM.",
   "main": "lib/index.js",
   "files": [
